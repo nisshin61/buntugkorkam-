@@ -1,0 +1,8 @@
+# Scratch test files & preview dumps
+*.ppm
+*.bin
+*.qlpreview/
+test_*.js
+test_output.docx
+garuda_b64.txt
+garuda_original_datauri.txt

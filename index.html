@@ -1,0 +1,2615 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<!-- docx.js (local first, then fallback to CDN) -->
+<script src="docx.min.js"></script>
+<script>if(typeof docx === "undefined"){ document.write('<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"><\/script>'); }</script>
+<!-- html2pdf.js (local first, then fallback to CDN) -->
+<script src="html2pdf.bundle.min.js"></script>
+<script>if(typeof html2pdf === "undefined"){ document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>'); }</script>
+<style>
+:root {
+  --primary: #1e3a8a;
+  --primary-hover: #172554;
+  --accent: #2563eb;
+  --bg-app: #f1f5f9;
+  --panel-bg: #ffffff;
+  --border-color: #cbd5e1;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --paper-font: 'TH Sarabun New', 'THSarabunNew', 'TH SarabunPSK', 'TH Sarabun PSK', 'Sarabun', sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  font-family: 'Sarabun', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+/* ================== App Layout ================== */
+.app-container {
+  display: grid;
+  grid-template-columns: minmax(440px, 550px) 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Left Form Pane */
+.form-pane {
+  background: var(--panel-bg);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+  z-index: 10;
+}
+
+.form-header {
+  padding: 14px 18px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.form-header h1 {
+  margin: 0 0 10px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.btn {
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: #fff;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.btn:hover { background: #f8fafc; border-color: #94a3b8; }
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+.btn-print-best {
+  background: #047857;
+  border-color: #065f46;
+  color: #fff;
+  font-weight: 600;
+}
+.btn-print-best:hover {
+  background: #065f46;
+}
+.btn-pdf {
+  background: #dc2626;
+  border-color: #b91c1c;
+  color: #fff;
+  font-weight: 600;
+}
+.btn-pdf:hover {
+  background: #b91c1c;
+}
+.btn-word {
+  background: #2b579a;
+  border-color: #1e3f70;
+  color: #fff;
+  font-weight: 600;
+}
+.btn-word:hover {
+  background: #1e3f70;
+}
+.btn-demo {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+.btn-demo:hover {
+  background: #dbeafe;
+}
+.btn-danger {
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+.btn-danger:hover {
+  background: #fef2f2;
+}
+.btn-sm { padding: 3px 8px; font-size: 11.5px; }
+
+.form-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 18px 80px;
+}
+
+fieldset {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  background: #ffffff;
+}
+legend {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--primary);
+  padding: 0 8px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 8px 0 4px;
+}
+.first-label { margin-top: 2px; }
+
+input[type=text], input[type=number], textarea, select {
+  width: 100%;
+  font-family: inherit;
+  font-size: 13.5px;
+  padding: 7px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text-main);
+  transition: border-color 0.15s;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+textarea {
+  min-height: 52px;
+  resize: vertical;
+  line-height: 1.4;
+}
+
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.row-date { display: grid; grid-template-columns: 60px 1fr 80px; gap: 6px; }
+
+.card-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: #f8fafc;
+}
+.card-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.total-bar {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #166534;
+}
+
+/* Smart Helper Bars */
+.smart-box {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.smart-box-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.preset-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.pill-btn {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.pill-btn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+.btn-mini-today {
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.btn-mini-today:hover {
+  background: #dbeafe;
+}
+
+.date-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-calendar-picker {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 15px;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.btn-calendar-picker:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+.btn-calendar-picker input[type="date"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.team-chip {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 11.5px;
+  color: #334155;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s;
+}
+.team-chip:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+.team-chip .del-team {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: bold;
+  margin-left: 2px;
+}
+.team-chip .del-team:hover {
+  color: #ef4444;
+}
+
+/* Right Preview Pane */
+.preview-pane {
+  background: #475569;
+  overflow: auto;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+.preview-scale-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  transform-origin: top center;
+  transition: transform 0.1s ease-out;
+}
+
+/* ================== A4 Paper Official Format ================== */
+.memo-page {
+  width: 210mm;
+  min-height: 297mm;
+  background: #ffffff;
+  color: #000000;
+  box-sizing: border-box;
+  /* ระเบียบงานสารบรรณ: บน 1.8 ซม. ซ้าย 3 ซม. ขวา 2 ซม. ล่าง 2 ซม. */
+  padding: 1.8cm 2cm 2cm 3cm;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  font-family: var(--paper-font);
+  font-size: 16pt;
+  line-height: 1.25;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+.memo-page * {
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+/* เลขหน้าสำหรับหน้าที่ 2: - ๒ - */
+.page-number-header {
+  text-align: center;
+  font-size: 16pt;
+  margin-bottom: 24pt;
+  line-height: 1;
+}
+
+/* ส่วนหัวกระดาษและตราครุฑ */
+.memo-header {
+  position: relative;
+  min-height: 1.6cm;
+  margin-bottom: 14pt;
+}
+
+.garuda-box {
+  width: 1.36cm;
+  height: 1.50cm;
+  display: inline-block;
+  vertical-align: top;
+}
+.garuda-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.memo-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0.15cm;
+  text-align: center;
+  font-size: 29pt;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+}
+
+/* เส้นประใต้ข้อความส่วนหัวหนังสือ */
+.memo-meta-line {
+  display: flex;
+  align-items: baseline;
+  margin-top: 4pt;
+  line-height: 1.25;
+}
+.memo-meta-line .label {
+  font-weight: 700;
+  white-space: nowrap;
+  font-size: 16pt;
+  margin-right: 4pt;
+}
+.memo-meta-line .fill-dotted {
+  flex: 1;
+  border-bottom: 1px dotted #000;
+  padding-left: 6pt;
+  min-height: 1.25em;
+  font-size: 16pt;
+  overflow-wrap: anywhere;
+}
+.memo-meta-line .col-left {
+  display: flex;
+  align-items: baseline;
+  width: 48%;
+  padding-right: 10pt;
+}
+.memo-meta-line .col-right {
+  display: flex;
+  align-items: baseline;
+  width: 52%;
+}
+
+/* ส่วนเรียน */
+.memo-to {
+  display: flex;
+  align-items: baseline;
+  margin-top: 5pt;
+}
+.memo-to .label {
+  font-weight: 700;
+  white-space: nowrap;
+  margin-right: 8pt;
+}
+.memo-to .value {
+  flex: 1;
+}
+
+/* เนื้อหาย่อหน้า */
+.memo-paragraph {
+  text-indent: 2.5cm;
+  text-align: justify;
+  text-justify: inter-character;
+  margin: 6pt 0 4pt;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+.memo-sub-paragraph {
+  text-indent: 2.5cm;
+  text-align: justify;
+  text-justify: inter-character;
+  margin: 8pt 0 6pt;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+.memo-paragraph.closing {
+  margin-top: 6pt;
+  margin-bottom: 8pt;
+}
+
+/* ตารางรายการงบประมาณ */
+table.memo-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 4pt 0 6pt;
+  font-size: 14pt;
+  line-height: 1.15;
+}
+table.memo-table th, table.memo-table td {
+  border: 1px solid #000;
+  padding: 2.5pt 4pt;
+  vertical-align: middle;
+}
+table.memo-table th {
+  text-align: center;
+  font-weight: 700;
+}
+table.memo-table td.align-center { text-align: center; }
+table.memo-table td.align-right { text-align: right; white-space: nowrap; }
+table.memo-table td.align-left { text-align: left; }
+table.memo-table tr { page-break-inside: avoid; }
+table.memo-table .total-label {
+  text-align: center;
+  font-weight: 700;
+}
+table.memo-table .total-amount {
+  text-align: right;
+  font-weight: 700;
+}
+
+/* ========================================================= */
+/* บล็อกลงนามท้ายเรื่อง: จัดตรงตามภาพต้นฉบับ 100%             */
+/* 'ผู้จัดทำ' / 'เห็นชอบ' อยู่ชิดซ้ายของบล็อกลงนาม             */
+/* และบล็อกชื่อ-ตำแหน่ง จัดกึ่งกลางตรงตามภาพถ่าย               */
+/* ========================================================= */
+.memo-signatures {
+  margin-top: 8pt;
+  page-break-inside: avoid;
+  padding-left: 36%; /* จุดเริ่มต้นของคำว่า ผู้จัดทำ / เห็นชอบ */
+}
+.memo-signatures.spacing-compact {
+  margin-top: 4pt;
+}
+.memo-signatures.spacing-compact .sig-section {
+  margin-bottom: 8pt;
+}
+.memo-signatures.spacing-compact .sig-header-label {
+  margin-bottom: 12pt;
+}
+.memo-signatures.spacing-tight {
+  margin-top: 2pt;
+}
+.memo-signatures.spacing-tight .sig-section {
+  margin-bottom: 4pt;
+}
+.memo-signatures.spacing-tight .sig-header-label {
+  margin-bottom: 8pt;
+}
+
+.sig-section {
+  margin-bottom: 14pt;
+}
+
+.sig-header-label {
+  font-weight: 700;
+  font-size: 16pt;
+  line-height: 1.25;
+  margin-bottom: 18pt; /* ระยะเว้นช่องว่างสำหรับลงลายมือชื่อจริง พอดีสำหรับเซ็นชื่อ */
+}
+
+.sig-name-block {
+  margin-left: 4.5cm; /* ระยะเยื้องกึ่งกลางชื่อ-ตำแหน่งตามพิกัดจริง */
+  transform: translateX(-50%);
+  width: 8cm;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.sig-name {
+  font-size: 16pt;
+  white-space: pre-line;
+}
+
+.sig-position {
+  margin-top: 1pt;
+  font-size: 16pt;
+  white-space: pre-line;
+}
+
+/* Notification Toast */
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all 0.25s ease;
+  pointer-events: none;
+  z-index: 999;
+}
+.toast.active { opacity: 1; transform: translateY(0); }
+
+/* ================== Media Print Styles ================== */
+@page {
+  size: A4 portrait;
+  margin: 1.5cm 2cm 1.5cm 2.8cm;
+}
+
+@media print {
+  html, body {
+    height: auto !important;
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .app-container {
+    display: block !important;
+    height: auto !important;
+  }
+  .form-pane, .no-print, .toast {
+    display: none !important;
+  }
+  .preview-pane {
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+  .preview-scale-wrapper {
+    width: 100% !important;
+    transform: none !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+  .memo-page {
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    page-break-after: always;
+    page-break-inside: auto;
+  }
+  .memo-page:only-child,
+  .memo-page:last-child {
+    page-break-after: auto !important;
+  }
+  .memo-page:only-child {
+    page-break-inside: avoid !important;
+  }
+  .memo-signatures {
+    page-break-inside: avoid !important;
+  }
+  table.memo-table {
+    page-break-inside: auto;
+  }
+  table.memo-table tr {
+    page-break-inside: avoid;
+  }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .app-container {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .form-pane {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- ================= LEFT FORM ================= -->
+  <aside class="form-pane no-print">
+    <div class="form-header">
+      <h1>📄 บันทึกข้อความขออนุมัติจัดซื้อ/จัดจ้าง Software</h1>
+      <div class="action-bar">
+        <button id="btnLoadDemo" class="btn btn-demo">✨ ข้อมูลตัวอย่างเริ่มต้น</button>
+        <button id="btnSave" class="btn">💾 บันทึกร่าง</button>
+        <button id="btnClear" class="btn btn-danger">ล้าง</button>
+        <button id="btnPrint" class="btn btn-print-best" title="แนะนำสูงสุด: บันทึกเป็น PDF แบบ Vector คมชัด 100% สระวรรณยุกต์ไม่เพี้ยน">🖨️ พิมพ์ / บันทึกเป็น PDF (คมชัด 100%)</button>
+        <button id="btnWord" class="btn btn-word">📝 Word</button>
+        <button id="btnPdf" class="btn btn-pdf" style="opacity:0.85;font-size:11.5px;">📥 ดาวน์โหลด PDF ด่วน</button>
+      </div>
+    </div>
+
+    <div class="form-body">
+      <!-- 🚀 แผงผู้ช่วยอัจฉริยะ ลดการกรอกข้อมูลเอง -->
+      <div class="smart-box" style="background:#f0f9ff;border:1px solid #bae6fd;">
+        <div class="smart-box-title">
+          <span>⚡ เลือกโปรแกรมสำเร็จรูป (เติมข้อมูลอัตโนมัติ 80%)</span>
+          <span style="font-size:11px;font-weight:normal;color:#0284c7;">คลิกเดียวเติมชื่อ, วัตถุประสงค์ & งบประมาณ</span>
+        </div>
+        <div class="preset-pills" id="presetPills" style="align-items:center;gap:8px;">
+          <!-- Dropdown เลือก AI Tools -->
+          <div style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #8b5cf6;padding:3px 10px;border-radius:999px;">
+            <span style="font-size:12px;font-weight:700;color:#6d28d9;white-space:nowrap;">🤖 AI Tools:</span>
+            <select id="selectAIToolPreset" style="border:none;background:transparent;font-size:12px;font-weight:600;color:#334155;outline:none;cursor:pointer;padding:2px 4px;">
+              <option value="">-- เลือก AI Tool ที่จะซื้อ --</option>
+              <option value="claude_max">🟣 Claude MAX</option>
+              <option value="claude_pro">🟣 Claude Pro</option>
+              <option value="chatgpt_plus">🟢 ChatGPT Plus</option>
+              <option value="chatgpt_team">🟢 ChatGPT Team</option>
+              <option value="perplexity_pro">🌐 Perplexity Pro</option>
+            </select>
+          </div>
+
+          <!-- โปรแกรมอื่นๆ คงเดิม -->
+          <button type="button" class="pill-btn" data-preset="ahaslides">📊 AhaSlides</button>
+          <button type="button" class="pill-btn" data-preset="kahoot">🎯 Kahoot! 360</button>
+        </div>
+      </div>
+
+      <!-- 📋 กล่องวางข้อความด่วน (Smart Text Paste) -->
+      <div class="smart-box" style="background:#fdf4ff;border:1px solid #f0abfc;">
+        <div class="smart-box-title">
+          <span>📝 วางข้อความสรุปด่วน (Smart Paste)</span>
+          <button type="button" id="btnToggleSmartPaste" class="pill-btn" style="padding:2px 8px;font-size:11px;">เปิด/ปิด กล่องวางข้อความ</button>
+        </div>
+        <div id="smartPastePanel" style="display:none;margin-top:8px;">
+          <textarea id="smartPasteInput" style="min-height:60px;font-size:12.5px;background:#fff;" placeholder="ตัวอย่าง: ขออนุมัติ Claude Pro 1 Account งบ 750 บาท ระยะเวลา 1 เดือน สำหรับทีมวิจัย เริ่ม 1 พ.ย. 2569"></textarea>
+          <div style="display:flex;gap:8px;margin-top:6px;">
+            <button type="button" id="btnApplySmartPaste" class="btn btn-primary btn-sm">✨ ประมวลผลและกรอกลงฟอร์ม</button>
+            <span style="font-size:11.5px;color:#701a75;align-self:center;">ระบบจะดึงชื่อโปรแกรม, จำนวน, งบ และวันที่ให้อัตโนมัติ</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ส่วนหัวหนังสือ -->
+      <fieldset>
+        <legend>ส่วนหัวหนังสือ</legend>
+        <label class="first-label">ส่วนงาน</label>
+        <input type="text" data-k="department" placeholder="คณะกรรมการกำหนดนโยบายด้านเทคโนโลยีสารสนเทศและการสื่อสาร">
+        
+        <div class="row2">
+          <div>
+            <label>ที่ (เลขที่หนังสือ)</label>
+            <input type="text" data-k="docNo" placeholder="ICT 70/001">
+          </div>
+          <div>
+            <label>วันที่ (วัน / เดือน / ปี พ.ศ.) <button type="button" class="btn-mini-today" id="btnTodayDoc">ใช้วันนี้</button></label>
+            <div class="date-group">
+              <div class="row-date" style="flex:1;">
+                <input type="text" data-k="docDay" placeholder="2">
+                <input type="text" data-k="docMonth" placeholder="ตุลาคม">
+                <input type="text" data-k="docYear" placeholder="2569">
+              </div>
+              <label class="btn-calendar-picker" title="คลิกเลือกวันที่จากปฏิทิน">
+                📅
+                <input type="date" data-cal-target="doc">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <label>เรื่อง</label>
+        <input type="text" data-k="subject" placeholder="ขอความเห็นชอบค่าสมัครสมาชิกโปรแกรม AI Tools">
+
+        <label>เรียน</label>
+        <input type="text" data-k="to" placeholder="ประธานคณะกรรมการกำหนดนโยบายด้านเทคโนโลยีสารสนเทศ">
+      </fieldset>
+
+      <!-- ย่อหน้าที่ 1: คำขอเดิม -->
+      <fieldset>
+        <legend>ย่อหน้าที่ 1 (การยื่นคำขอ)</legend>
+        <!-- ตัวเลือกชื่อทีมแบบ Dropdown พร้อมพิมพ์เองได้ -->
+        <div style="display:flex;gap:6px;margin-top:4px;">
+          <input type="text" data-k="requester" id="inputRequester" placeholder="พิมพ์ชื่อทีม หรือเลือกจากรายการด้านขวา" style="flex:1;">
+          <select id="selectTeamDropdown" style="width:auto;max-width:240px;background:#f8fafc;font-size:12.5px;">
+            <option value="">-- เลือกชื่อทีมจากรายการ --</option>
+          </select>
+          <button type="button" id="btnSaveCurrentTeam" class="btn btn-sm" style="white-space:nowrap;background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;" title="บันทึกชื่อทีมที่กำลังพิมพ์ไว้ใน Dropdown">+ จำชื่อทีมนี้</button>
+        </div>
+
+        <div class="row2" style="margin-top:8px;">
+          <div>
+            <label>ชื่อซอฟต์แวร์/โปรแกรม</label>
+            <input type="text" data-k="software" placeholder="AI Tools">
+          </div>
+          <div>
+            <label>จำนวนรายการ (เช่น 4 Account จำนวน 4 รายการ)</label>
+            <input type="text" data-k="itemCount" placeholder="4 Account จำนวน 4 รายการ">
+          </div>
+        </div>
+
+        <label>วันที่ยื่นคำขอ (วัน / เดือน / ปี พ.ศ.) <button type="button" class="btn-mini-today" id="btnTodayRequest">ใช้วันนี้</button></label>
+        <div class="date-group">
+          <div class="row-date" style="flex:1;">
+            <input type="text" data-k="requestDay" placeholder="6">
+            <input type="text" data-k="requestMonth" placeholder="สิงหาคม">
+            <input type="text" data-k="requestYear" placeholder="2569">
+          </div>
+          <label class="btn-calendar-picker" title="คลิกเลือกวันที่จากปฏิทิน">
+            📅
+            <input type="date" data-cal-target="request">
+          </label>
+        </div>
+
+        <label>วัตถุประสงค์การใช้งาน / บทนำข้อความ</label>
+        <textarea data-k="purpose" placeholder="เพื่อสร้างกระบวนการทำงานวิจัยและจัดทำยุทธศาสตร์แบบครบวงจร โดยวาง Role และหน้าที่ของ AI แต่ละตัวเสริมกัน ได้แก่"></textarea>
+      </fieldset>
+
+      <!-- ย่อหน้าย่อย / บทบาทความจำเป็นแต่ละรายการ (เช่น Claude MAX, Claude Pro) -->
+      <fieldset>
+        <legend>ย่อหน้าย่อย/บทบาทความจำเป็น (ทางเลือกสำหรับเอกสาร 2 หน้า)</legend>
+        <div id="subParasContainer"></div>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+          <button id="btnAddSubPara" type="button" class="btn" style="background:#f8fafc;">+ เพิ่มย่อหน้ารายละเอียดบทบาท AI</button>
+          <button id="btnLoadAll4AIRoles" type="button" class="btn" style="background:#f5f3ff;color:#6d28d9;border-color:#ddd6fe;">✨ โหลดครบชุด 4 บทบาท AI (Claude Max/Pro, GPT Plus, Perplexity)</button>
+        </div>
+      </fieldset>
+
+      <!-- ย่อหน้าที่ 2: มติการประชุม -->
+      <fieldset>
+        <legend>ย่อหน้าที่ 2 (มติที่ประชุมคณะกรรมการ)</legend>
+        <label class="first-label">คณะกรรมการที่ประชุม</label>
+        <input type="text" data-k="committee" placeholder="คณะกรรมการกำหนดนโยบายด้านเทคโนโลยีสารสนเทศและการสื่อสาร">
+
+        <div class="row2">
+          <div>
+            <label>การประชุมครั้งที่</label>
+            <input type="text" data-k="meetingNo" placeholder="8/2569">
+          </div>
+          <div>
+            <label>ชื่อวัน (เช่น วันพฤหัสบดี)</label>
+            <input type="text" data-k="meetingDayName" placeholder="วันพฤหัสบดี">
+          </div>
+        </div>
+
+        <label>วันที่ประชุม (วัน / เดือน / ปี พ.ศ.) <button type="button" class="btn-mini-today" id="btnTodayMeeting">ใช้วันนี้</button></label>
+        <div class="date-group">
+          <div class="row-date" style="flex:1;">
+            <input type="text" data-k="meetingDay" placeholder="6">
+            <input type="text" data-k="meetingMonth" placeholder="สิงหาคม">
+            <input type="text" data-k="meetingYear" placeholder="2569">
+          </div>
+          <label class="btn-calendar-picker" title="คลิกเลือกวันที่จากปฏิทิน">
+            📅
+            <input type="date" data-cal-target="meeting">
+          </label>
+        </div>
+
+        <div class="row2">
+          <div>
+            <label>มติเห็นชอบซอฟต์แวร์/โปรแกรม</label>
+            <input type="text" data-k="resolutionSoftware" placeholder="AI Tools 4 Account">
+          </div>
+          <div>
+            <label>จำนวนรายการตามมติ</label>
+            <input type="text" data-k="resolutionCount" placeholder="4">
+          </div>
+        </div>
+
+        <div class="row2">
+          <div>
+            <label>ระยะเวลาที่อนุมัติ</label>
+            <div style="display:flex;gap:6px;">
+              <input type="text" data-k="durationMonths" placeholder="1 เดือน" style="flex:1;">
+              <button type="button" id="btnCalcPeriodEnd" class="btn btn-sm" style="white-space:nowrap;background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;" title="คำนวณวันสิ้นสุดให้อัตโนมัติจากวันที่เริ่มต้นและระยะเวลา">⚡ คำนวณวันสิ้นสุด</button>
+            </div>
+          </div>
+          <div></div>
+        </div>
+
+        <div class="row2">
+          <div>
+            <label>ตั้งแต่วันที่</label>
+            <div class="date-group">
+              <div class="row-date" style="flex:1;">
+                <input type="text" data-k="periodStartDay" placeholder="8">
+                <input type="text" data-k="periodStartMonth" placeholder="ตุลาคม">
+                <input type="text" data-k="periodStartYear" placeholder="2569">
+              </div>
+              <label class="btn-calendar-picker" title="คลิกเลือกวันที่จากปฏิทิน">
+                📅
+                <input type="date" data-cal-target="periodStart">
+              </label>
+            </div>
+          </div>
+          <div>
+            <label>ถึงวันที่</label>
+            <div class="date-group">
+              <div class="row-date" style="flex:1;">
+                <input type="text" data-k="periodEndDay" placeholder="7">
+                <input type="text" data-k="periodEndMonth" placeholder="พฤศจิกายน">
+                <input type="text" data-k="periodEndYear" placeholder="2569">
+              </div>
+              <label class="btn-calendar-picker" title="คลิกเลือกวันที่จากปฏิทิน">
+                📅
+                <input type="date" data-cal-target="periodEnd">
+              </label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- ตารางงบประมาณ -->
+      <fieldset>
+        <legend>ตารางรายการงบประมาณ</legend>
+
+        <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:10px 12px;margin-bottom:12px;">
+          <div style="font-size:12.5px;font-weight:700;color:var(--text-color);margin-bottom:6px;">
+            ⚙️ ปรับแต่งขนาดตาราง & ระยะกระดาษ (ช่วยไม่ให้ข้อมูลล้นตกไปหน้าที่ 2)
+          </div>
+          <div class="row2">
+            <div>
+              <label style="font-size:12px;margin-bottom:2px;">ขนาดตัวอักษรในตาราง</label>
+              <select data-k="tableFontSize" style="padding:6px 10px;font-size:13px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;width:100%;">
+                <option value="14">14 pt (มาตรฐานสารบรรณ)</option>
+                <option value="13">13 pt (กระชับพอดี)</option>
+                <option value="12">12 pt (กะทัดรัด - แนะนำเมื่อข้อความยาว)</option>
+                <option value="11">11 pt (เล็กพิเศษ)</option>
+                <option value="10">10 pt (เล็กมาก - จุได้เยอะสุด)</option>
+                <option value="15">15 pt (ขนาดใหญ่)</option>
+                <option value="16">16 pt (เท่าเนื้อหาปกติ)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px;margin-bottom:2px;">ระยะห่างส่วนลงนาม</label>
+              <select data-k="signatureSpacing" style="padding:6px 10px;font-size:13px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;width:100%;">
+                <option value="normal">ปกติ (ช่องเซ็นกว้าง)</option>
+                <option value="compact">กระชับ (ช่วยประหยัดพื้นที่ไม่ให้ตกหน้า)</option>
+                <option value="tight">กระชับพิเศษ (ลดช่องว่างสูงสุด)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="itemsContainer"></div>
+        <button id="btnAddItem" class="btn btn-primary" style="margin-top:6px;">+ เพิ่มรายการ (Add Item)</button>
+
+        <div style="margin-top:12px;">
+          <label>ระบุยอดรวมวงเงินงบประมาณ (กำหนดเอง หรือปล่อยว่างเพื่อคำนวณอัตโนมัติ)</label>
+          <input type="text" data-k="totalBudgetOverride" placeholder="เว้นว่างไว้จะรวมเงินให้อัตโนมัติ (เช่น 9,650.00)">
+        </div>
+
+        <div class="total-bar">
+          <span>รวมวงเงินงบประมาณ:</span>
+          <span><span id="totalDisplay">0.00</span> บาท</span>
+        </div>
+      </fieldset>
+
+      <!-- ข้อความลงท้าย -->
+      <fieldset>
+        <legend>ข้อความลงท้าย</legend>
+        <input type="text" data-k="closingText" placeholder="จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ">
+      </fieldset>
+
+      <!-- ส่วนลงนาม -->
+      <fieldset>
+        <legend>ส่วนลงนาม (จัดวางตำแหน่งตามภาพต้นฉบับ)</legend>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;background:#f8fafc;padding:6px 10px;border-radius:6px;border:1px solid #e2e8f0;">
+          <span style="font-size:12px;font-weight:600;color:var(--text-muted);">👤 ชุดผู้ลงนามสำเร็จรูป:</span>
+          <div style="display:flex;gap:6px;">
+            <button type="button" id="btnProfileDanupol" class="pill-btn" style="padding:2px 8px;font-size:11px;">ชุด คกก. ICT (นายดนุพล / ผศ.ดร.สุริยะ)</button>
+            <button type="button" id="btnProfileBlank" class="pill-btn" style="padding:2px 8px;font-size:11px;">เว้นว่างให้กรอกเอง</button>
+          </div>
+        </div>
+
+        <b style="color:var(--primary);">1. ผู้จัดทำ</b>
+        <div class="row2">
+          <div>
+            <label>หัวข้อ/สถานะ</label>
+            <input type="text" data-k="preparerRole" placeholder="ผู้จัดทำ">
+          </div>
+          <div>
+            <label>ชื่อ-นามสกุล (มีวงเล็บ)</label>
+            <input type="text" data-k="preparerName" placeholder="(นายดนุพล กรอกรวม)">
+          </div>
+        </div>
+        <label>ตำแหน่ง</label>
+        <textarea data-k="preparerPos" placeholder="เลขานุการคณะกรรมการกำหนดนโยบาย&#10;ด้านเทคโนโลยีสารสนเทศและการสื่อสาร"></textarea>
+
+        <hr style="border:0;border-top:1px dashed #cbd5e1;margin:14px 0;">
+
+        <b style="color:var(--primary);">2. ผู้เห็นชอบ / อนุมัติ</b>
+        <div class="row2">
+          <div>
+            <label>คำขึ้นต้น</label>
+            <input type="text" data-k="approverStmt" placeholder="เห็นชอบ">
+          </div>
+          <div>
+            <label>ชื่อ-นามสกุล (มีวงเล็บ)</label>
+            <input type="text" data-k="approverName" placeholder="(ผู้ช่วยศาสตราจารย์ ดร.สุริยะ ทองมุณี)">
+          </div>
+        </div>
+        <label>ตำแหน่ง</label>
+        <textarea data-k="approverPos" placeholder="ประธานคณะกรรมการกำหนดนโยบาย&#10;ด้านเทคโนโลยีสารสนเทศและการสื่อสาร"></textarea>
+      </fieldset>
+    </div>
+  </aside>
+
+  <!-- ================= RIGHT PREVIEW ================= -->
+  <main class="preview-pane" id="previewPane">
+    <div class="preview-scale-wrapper" id="previewScaleWrapper">
+      <div id="pagesContainer" style="display:flex;flex-direction:column;gap:24px;"></div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+const GARUDA_SRC = "data:image/png;base64,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";
+const STORAGE_KEY = 'official_memo_generator_v8';
+
+// ข้อมูลตัวอย่างหลักฉบับทางการ (ตรงตามภาพต้นฉบับล่าสุดเพื่อให้เพิ่มข้อมูลชุดใหม่ได้ง่ายๆ)
+const defaultTemplate = () => ({
+  department: 'คณะกรรมการกำหนดนโยบายด้านเทคโนโลยีสารสนเทศและการสื่อสาร',
+  docNo: 'ICT 70/000',
+  docDay: '01',
+  docMonth: 'มกราคม',
+  docYear: '2569',
+  subject: 'ขอความเห็นชอบค่าสมัครสมาชิกโปรแกรม AI Tools',
+  to: 'ประธานคณะกรรมการกำหนดนโยบายด้านเทคโนโลยีสารสนเทศ',
+  
+  requester: '(ชื่อทีม)',
+  software: '(ชื่อ)',
+  itemCount: '(จำนวน)',
+  requestDay: '00',
+  requestMonth: 'มกราคม',
+  requestYear: '2569',
+  purpose: '(เพื่อ---------(รายละเอียดโปรแกรม)-------------)',
+  
+  subParas: [],
+  
+  meetingNo: '0/2570',
+  meetingDayName: '(วันที่ประชุม) ที่',
+  meetingDay: '01',
+  meetingMonth: 'มกราคม',
+  meetingYear: '2569',
+  committee: 'คณะกรรมการกำหนดนโยบายด้านเทคโนโลยีสารสนเทศและการสื่อสาร',
+  resolutionSoftware: '(ชื่อ)',
+  resolutionCount: '01',
+  durationMonths: '1',
+  periodStartDay: '8',
+  periodStartMonth: 'ตุลาคม',
+  periodStartYear: '2569',
+  periodEndDay: '7',
+  periodEndMonth: 'พฤศจิกายน',
+  periodEndYear: '2569',
+  
+  tableFontSize: '14',
+  signatureSpacing: 'normal',
+
+  items: [
+    {
+      name: '',
+      qty: '1',
+      unit: 'Account',
+      budget: '0.00',
+      projectCode: '',
+      projectName: ''
+    }
+  ],
+  totalBudgetOverride: '0.00',
+  closingText: 'จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ',
+  
+  preparerRole: 'ผู้จัดทำ',
+  preparerName: '(นายดนุพล กรอกรวม)',
+  preparerPos: 'เลขานุการคณะกรรมการกำหนดนโยบาย\nด้านเทคโนโลยีสารสนเทศและการสื่อสาร',
+  
+  approverStmt: 'เห็นชอบ',
+  approverName: '(ผู้ช่วยศาสตราจารย์ ดร.สุริยะ ทองมุณี)',
+  approverPos: 'ประธานคณะกรรมการกำหนดนโยบาย\nด้านเทคโนโลยีสารสนเทศและการสื่อสาร'
+});
+
+const blankState = () => ({
+  department: '', docNo: '', docDay: '', docMonth: '', docYear: '', subject: '', to: '',
+  requester: '', software: '', itemCount: '', requestDay: '', requestMonth: '', requestYear: '', purpose: '',
+  subParas: [],
+  meetingNo: '', meetingDayName: '', meetingDay: '', meetingMonth: '', meetingYear: '',
+  committee: '', resolutionSoftware: '', resolutionCount: '', durationMonths: '',
+  periodStartDay: '', periodStartMonth: '', periodStartYear: '',
+  periodEndDay: '', periodEndMonth: '', periodEndYear: '',
+  tableFontSize: '14',
+  signatureSpacing: 'normal',
+  items: [{ name: '', qty: '', unit: '', budget: '', projectCode: '', projectName: '' }],
+  totalBudgetOverride: '',
+  closingText: 'จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ',
+  preparerRole: 'ผู้จัดทำ', preparerName: '', preparerPos: '',
+  approverStmt: 'เห็นชอบ', approverName: '', approverPos: ''
+});
+
+// โหลดข้อมูลตัวอย่างเป็นค่าเริ่มต้นเสมอ (ไม่ต้องเริ่มใหม่)
+let state = loadDraft() || defaultTemplate();
+
+const $ = sel => document.querySelector(sel);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nl2br = s => esc(s).replace(/\n/g, '<br>');
+
+function formatMoney(n) {
+  const v = Number(n) || 0;
+  return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function calcTotal() {
+  if (state.totalBudgetOverride && state.totalBudgetOverride.trim() !== '') {
+    return state.totalBudgetOverride.trim();
+  }
+  const sum = state.items.reduce((acc, it) => acc + (Number(it.budget) || 0), 0);
+  return formatMoney(sum);
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? Object.assign(defaultTemplate(), JSON.parse(raw)) : null;
+  } catch(e) { return null; }
+}
+
+function saveDraft() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    showToast('บันทึกข้อมูลร่างเรียบร้อยแล้ว ✓');
+  } catch(e) {
+    showToast('เกิดข้อผิดพลาดในการบันทึก: ' + e.message);
+  }
+}
+
+function showToast(msg) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('active');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove('active'), 2400);
+}
+
+function bindForm() {
+  document.querySelectorAll('[data-k]').forEach(el => {
+    const key = el.dataset.k;
+    el.value = state[key] ?? '';
+    el.oninput = el.onchange = () => {
+      state[key] = el.value;
+      render();
+    };
+  });
+  renderSubParasForm();
+  renderItemsForm();
+}
+
+function renderSubParasForm() {
+  const box = $('#subParasContainer');
+  box.innerHTML = '';
+  if (!state.subParas || state.subParas.length === 0) {
+    box.innerHTML = '<div style="font-size:12px;color:var(--text-muted);font-style:italic;">ไม่มีข้อย่อยเพิ่มเติม (หากต้องการแยกบทบาท/เหตุผลความจำเป็นของโปรแกรมแต่ละตัว สามารถกดเพิ่มได้)</div>';
+    return;
+  }
+  state.subParas.forEach((sp, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card-item';
+    card.innerHTML = `
+      <div class="card-item-top">
+        <span>ข้อย่อยที่ ${idx + 1}: ${esc(sp.title || 'รายการย่อย')}</span>
+        <div style="display:flex;gap:4px;">
+          <select class="subpara-quick-preset" data-sidx="${idx}" style="font-size:11px;padding:1px 6px;background:#fff;">
+            <option value="">⚡ โหลดบทบาท AI สำเร็จรูป</option>
+            <option value="claude_max">🟣 Claude MAX</option>
+            <option value="claude_pro">🟣 Claude Pro</option>
+            <option value="chatgpt_plus">🟢 ChatGPT Plus</option>
+            <option value="perplexity_pro">🌐 Perplexity Pro</option>
+          </select>
+          <button class="btn btn-danger btn-sm" data-delsub="${idx}">ลบ</button>
+        </div>
+      </div>
+      <label>หัวข้อโปรแกรม (ขีดเส้นใต้ เช่น Claude MAX)</label>
+      <input type="text" data-sidx="${idx}" data-sfield="title" value="${esc(sp.title)}" placeholder="เช่น Claude MAX">
+      <label>เนื้อหาบทบาท/หน้าที่/ความจำเป็น</label>
+      <textarea style="min-height:90px" data-sidx="${idx}" data-sfield="content">${esc(sp.content)}</textarea>
+    `;
+    box.appendChild(card);
+  });
+
+  box.querySelectorAll('.subpara-quick-preset').forEach(sel => {
+    sel.onchange = () => {
+      const val = sel.value;
+      if (!val) return;
+      const idx = +sel.dataset.sidx;
+      if (val === 'claude_max') {
+        state.subParas[idx].title = 'Claude MAX';
+        state.subParas[idx].content = 'ใช้สำหรับนำ Evidence และ Insight ที่ผ่านการวิเคราะห์แล้วมาคิดต่อในระดับยุทธศาสตร์ โดยวิเคราะห์ความสัมพันธ์ของปัจจัยต่าง ๆ ในเชิงระบบ ค้นหา Bottleneck และ Root Cause กำหนด Strategic Issues, Strategic Priorities, Strategic Choices รวมถึงออกแบบแนวทางเชิงนโยบาย เป้าหมาย ยุทธศาสตร์ และ Roadmap ที่สามารถนำไปต่อยอดเป็นกลยุทธ์ระดับประเทศได้ ซึ่งหากมนุษย์ทำเองจะต้องใช้ผู้เชี่ยวชาญหลายด้านมาร่วมกันคิด วิเคราะห์ความสัมพันธ์ของข้อมูลจำนวนมาก ทดลองตั้งสมมติฐาน เปรียบเทียบทางเลือก และพัฒนาโครงสร้างยุทธศาสตร์หลายรอบ ซึ่งใช้ทั้งเวลาและทรัพยากรสูง ดังนั้น Claude Max จึงทำหน้าที่เป็น Strategic Thinking & Strategy Architecture ที่ช่วยเพิ่มความสามารถในการคิดเชิงระบบ และทดลองทางเลือกเชิงยุทธศาสตร์ได้อย่างรวดเร็วและเป็นโครงสร้าง';
+      } else if (val === 'claude_pro') {
+        state.subParas[idx].title = 'Claude Pro';
+        state.subParas[idx].content = 'ใช้สำหรับอ่าน วิเคราะห์ เปรียบเทียบ และสังเคราะห์ข้อมูลและเอกสารจำนวนมากที่ได้จากการวิจัย เพื่อนำข้อมูลดิบมาจัดหมวดหมู่ เชื่อมโยงประเด็น ค้นหารูปแบบ วิเคราะห์สาเหตุราก และพัฒนาเป็น Insight หรือข้อค้นพบที่มีความหมายต่อโจทย์วิจัย ซึ่งหากมนุษย์ทำเองจะต้องอ่านเอกสารจำนวนมากทีละฉบับ จดบันทึก สกัดประเด็น เปรียบเทียบความเห็นจากหลายแหล่ง และกลับมาสังเคราะห์ข้อมูลทั้งหมดด้วยตนเอง ซึ่งเป็นงานที่ใช้เวลานานและมีความเสี่ยงต่อการตกหล่นของข้อมูล ดังนั้น Claude Pro จึงทำหน้าที่เป็น Research Analyst ที่ช่วยเร่งกระบวนการเปลี่ยน “ข้อมูลจำนวนมาก” ให้กลายเป็น “ความรู้และ Insight ที่นำไปใช้ต่อได้”';
+      } else if (val === 'chatgpt_plus') {
+        state.subParas[idx].title = 'ChatGPT Plus';
+        state.subParas[idx].content = 'ใช้สำหรับตรวจสอบ Cross-check ท้าทาย และบูรณาการผลลัพธ์จากการวิจัยและการออกแบบยุทธศาสตร์ของ AI ตัวอื่น โดยทำหน้าที่เป็น Red Team ที่พยายามค้นหาข้อผิดพลาดของข้อมูล สมมติฐาน ช่องว่างของเหตุผล ความไม่สอดคล้องกันระหว่าง Evidence กับ Strategy รวมถึงประเมินความเป็นไปได้ในการนำไปปฏิบัติ ก่อนสังเคราะห์ออกมาเป็นข้อเสนอเชิงยุทธศาสตร์ที่มีความชัดเจนและพร้อมนำเสนอแก่ผู้บริหารหรือผู้มีส่วนได้ส่วนเสีย ซึ่งหากมนุษย์ทำเองจะต้องมีผู้เชี่ยวชาญหลายฝ่ายมาทบทวนงาน ตั้งคำถามในมุมที่แตกต่าง ตรวจสอบความสมเหตุสมผล และ Review งานหลายรอบ ซึ่งใช้เวลานานและมีต้นทุนสูง ดังนั้น GPT Plus จึงทำหน้าที่เป็น Strategic Reviewer, Red Team และ Integrator เพื่อเพิ่มอีกหนึ่งชั้นของการตรวจสอบก่อนที่งานวิจัยจะถูกนำไปใช้ในการตัดสินใจเชิงยุทธศาสตร์';
+      } else if (val === 'perplexity_pro') {
+        state.subParas[idx].title = 'Perplexity Pro';
+        state.subParas[idx].content = 'ใช้สำหรับค้นหาและรวบรวมข้อมูลจากแหล่งข้อมูลจำนวนมากทั้งในและต่างประเทศอย่างรวดเร็ว พร้อมตรวจสอบแหล่งที่มา เปรียบเทียบข้อมูล และค้นหา Evidence ที่เกี่ยวข้องกับประเด็นวิจัย ซึ่งหากมนุษย์ดำเนินการเองจะต้องใช้เวลาจำนวนมากในการค้นเว็บไซต์ งานวิจัย รายงานภาครัฐ ข่าว ฐานข้อมูล และข้อมูลจากต่างประเทศทีละแหล่ง รวมถึงต้องเสียเวลาในการตรวจสอบความน่าเชื่อถือและเปรียบเทียบข้อมูลที่กระจัดกระจาย ดังนั้น Perplexity จึงทำหน้าที่เสมือน Research Intelligence ที่ช่วยลดเวลาในการทำ Desk Research และทำให้ทีมสามารถเข้าถึงข้อมูลจำนวนมากได้รวดเร็วขึ้น ก่อนนำข้อมูลเหล่านั้นไปวิเคราะห์ในขั้นตอนต่อไป';
+      }
+      renderSubParasForm();
+      render();
+      showToast(`เติมข้อความบทบาท ${state.subParas[idx].title} เรียบร้อย ✓`);
+    };
+  });
+
+  box.querySelectorAll('input[data-sidx], textarea[data-sidx]').forEach(inp => {
+    inp.oninput = () => {
+      const idx = +inp.dataset.sidx;
+      const f = inp.dataset.sfield;
+      state.subParas[idx][f] = inp.value;
+      render();
+    };
+  });
+
+  box.querySelectorAll('[data-delsub]').forEach(btn => {
+    btn.onclick = () => {
+      state.subParas.splice(+btn.dataset.delsub, 1);
+      renderSubParasForm();
+      render();
+    };
+  });
+}
+
+function renderItemsForm() {
+  const box = $('#itemsContainer');
+  box.innerHTML = '';
+  state.items.forEach((it, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card-item';
+    card.innerHTML = `
+      <div class="card-item-top">
+        <span>รายการที่ ${idx + 1}</span>
+        <button class="btn btn-danger btn-sm" data-del="${idx}" ${state.items.length <= 1 ? 'disabled style="opacity:.4;cursor:not-allowed"' : ''}>ลบ</button>
+      </div>
+      <label>ชื่อรายการ</label>
+      <div style="display:flex;gap:6px;margin-bottom:6px;">
+        <input type="text" data-idx="${idx}" data-field="name" value="${esc(it.name)}" placeholder="เช่น Claude MAX (1 เดือน) หรือเลือกจากดรอปดาวน์" style="flex:1;">
+        <select class="item-quick-select" data-idx="${idx}" style="width:auto;max-width:210px;font-size:12px;background:#f8fafc;">
+          <option value="">-- เลือกรายการด่วน --</option>
+          <optgroup label="🤖 ปัญญาประดิษฐ์ (AI Tools)">
+            <option value="Claude MAX (1 เดือน)" data-qty="1" data-unit="Account" data-budget="7500.00">Claude MAX (1 เดือน)</option>
+            <option value="Claude Pro (1 เดือน)" data-qty="1" data-unit="Account" data-budget="750.00">Claude Pro (1 เดือน)</option>
+            <option value="ChatGPT Plus (1 เดือน)" data-qty="1" data-unit="Account" data-budget="750.00">ChatGPT Plus (1 เดือน)</option>
+            <option value="ChatGPT Team (1 เดือน)" data-qty="2" data-unit="Account" data-budget="2200.00">ChatGPT Team (1 เดือน)</option>
+            <option value="Perplexity Pro (1 เดือน)" data-qty="1" data-unit="Account" data-budget="750.00">Perplexity Pro (1 เดือน)</option>
+          </optgroup>
+          <optgroup label="💼 โปรแกรมอื่นๆ">
+            <option value="AhaSlides (1 เดือน)" data-qty="1" data-unit="Account" data-budget="1200.00">AhaSlides (1 เดือน)</option>
+            <option value="Kahoot! 360 (1 เดือน)" data-qty="1" data-unit="Account" data-budget="1500.00">Kahoot! 360 (1 เดือน)</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="row3">
+        <div>
+          <label>จำนวน</label>
+          <input type="text" data-idx="${idx}" data-field="qty" value="${esc(it.qty)}">
+        </div>
+        <div>
+          <label>หน่วย</label>
+          <input type="text" data-idx="${idx}" data-field="unit" value="${esc(it.unit)}" placeholder="Account">
+        </div>
+        <div>
+          <label>งบประมาณ (บาท)</label>
+          <input type="text" data-idx="${idx}" data-field="budget" value="${esc(it.budget)}">
+        </div>
+      </div>
+      <div class="row2" style="margin-top:6px;">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <label style="margin:0;">รหัสโครงการ (ขึ้นบรรทัดใหม่ด้วย Enter)</label>
+            ${idx === 0 && state.items.length > 1 ? '<button type="button" class="btn-mini-today" id="btnCopyProjectDown" style="margin:0;font-size:11px;" title="คัดลอกรหัสและชื่อโครงการนี้ไปยังรายการอื่นทั้งหมด">🔗 ใช้โครงการนี้กับทุกรายการ</button>' : ''}
+          </div>
+          <textarea style="min-height:50px;margin-top:4px;" data-idx="${idx}" data-field="projectCode">${esc(it.projectCode)}</textarea>
+        </div>
+        <div>
+          <label style="margin:0;">เบิกจ่ายจากโครงการ</label>
+          <textarea style="min-height:50px;margin-top:4px;" data-idx="${idx}" data-field="projectName">${esc(it.projectName)}</textarea>
+        </div>
+      </div>
+    `;
+    box.appendChild(card);
+  });
+
+  const btnCopyDown = box.querySelector('#btnCopyProjectDown');
+  if (btnCopyDown) {
+    btnCopyDown.onclick = () => {
+      const pCode = state.items[0].projectCode || '';
+      const pName = state.items[0].projectName || '';
+      for (let i = 1; i < state.items.length; i++) {
+        state.items[i].projectCode = pCode;
+        state.items[i].projectName = pName;
+      }
+      renderItemsForm();
+      render();
+      showToast('คัดลอกโครงการไปยังทุกรายการเรียบร้อยแล้ว ✓ (รวมช่องในตารางให้แล้ว)');
+    };
+  }
+
+  box.querySelectorAll('.item-quick-select').forEach(sel => {
+    sel.onchange = () => {
+      if (!sel.value) return;
+      const idx = +sel.dataset.idx;
+      const opt = sel.options[sel.selectedIndex];
+      state.items[idx].name = sel.value;
+      if (opt.dataset.qty) state.items[idx].qty = opt.dataset.qty;
+      if (opt.dataset.unit) state.items[idx].unit = opt.dataset.unit;
+      if (opt.dataset.budget) state.items[idx].budget = opt.dataset.budget;
+      renderItemsForm();
+      render();
+      showToast(`เลือกรายการ: ${sel.value} ✓`);
+    };
+  });
+
+  box.querySelectorAll('input[data-idx], textarea[data-idx]').forEach(input => {
+    input.oninput = () => {
+      const idx = +input.dataset.idx;
+      const field = input.dataset.field;
+      state.items[idx][field] = input.value;
+      render();
+    };
+  });
+
+  box.querySelectorAll('[data-del]').forEach(btn => {
+    btn.onclick = () => {
+      if (state.items.length <= 1) return;
+      state.items.splice(+btn.dataset.del, 1);
+      renderItemsForm();
+      render();
+    };
+  });
+}
+
+function render() {
+  const s = state;
+  const container = $('#pagesContainer');
+  container.innerHTML = '';
+
+  const headerDateStr = [s.docDay, s.docMonth, s.docYear].filter(Boolean).join(' ');
+  const reqDateStr = [s.requestDay, s.requestMonth, s.requestYear].filter(Boolean).join(' ');
+  const para1 = `ตามที่ ${esc(s.requester)} ได้มีคำขออนุมัติค่าสมัครสมาชิกโปรแกรม ${esc(s.software)}${s.itemCount ? ` ${esc(s.itemCount)}` : ''}${reqDateStr ? ` เมื่อวันที่ ${esc(reqDateStr)}` : ''} ${esc(s.purpose)}`;
+
+  const meetDateStr = [s.meetingDayName, s.meetingDay ? `ที่ ${s.meetingDay}` : '', s.meetingMonth, s.meetingYear].filter(Boolean).join(' ');
+  const periodStartStr = [s.periodStartDay, s.periodStartMonth, s.periodStartYear].filter(Boolean).join(' ');
+  const periodEndStr = [s.periodEndDay, s.periodEndMonth, s.periodEndYear].filter(Boolean).join(' ');
+
+  let periodStr = '';
+  if (s.durationMonths || periodStartStr || periodEndStr) {
+    const dur = s.durationMonths ? `เป็นจำนวน ${esc(s.durationMonths)} ` : '';
+    const span = (periodStartStr && periodEndStr) ? `ตั้งแต่ ${periodStartStr} – ${periodEndStr} ` : '';
+    periodStr = `โดยอนุมัติระยะเวลา${dur}${span}ซึ่งมีรายละเอียดดังนี้`;
+  } else {
+    periodStr = 'ซึ่งมีรายละเอียดดังนี้';
+  }
+
+  const para2 = `ในคราวประชุม${esc(s.committee)}${s.meetingNo ? ` ครั้งที่ ${esc(s.meetingNo)}` : ''}${meetDateStr ? ` ${meetDateStr}` : ''} ${esc(s.committee)} มีมติเห็นชอบอนุมัติค่าสมัครสมาชิกโปรแกรม ${esc(s.resolutionSoftware)}${s.resolutionCount ? ` จำนวน ${esc(s.resolutionCount)} รายการ` : ''} เป็นที่เรียบร้อย ${periodStr}`;
+
+  const hasMultipleRows = s.items.length > 1;
+  const isSameProject = hasMultipleRows && s.items.length > 1 && (
+    s.items.slice(1).every(it => !it.projectCode && !it.projectName) ||
+    s.items.every(it => it.projectCode === s.items[0].projectCode && it.projectName === s.items[0].projectName && (it.projectCode || it.projectName))
+  );
+  const firstRowSpan = isSameProject ? s.items.length : 1;
+
+  const tableRows = s.items.map((it, idx) => {
+    const isFirst = idx === 0;
+    const mergeCols = (firstRowSpan > 1);
+
+    let projectCells = '';
+    if (mergeCols) {
+      if (isFirst) {
+        projectCells = `
+          <td class="align-center" style="width:16%" rowspan="${firstRowSpan}">${nl2br(it.projectCode)}</td>
+          <td class="align-left" style="width:20%" rowspan="${firstRowSpan}">${nl2br(it.projectName)}</td>
+        `;
+      } else {
+        projectCells = '';
+      }
+    } else {
+      projectCells = `
+        <td class="align-center" style="width:16%">${nl2br(it.projectCode)}</td>
+        <td class="align-left" style="width:20%">${nl2br(it.projectName)}</td>
+      `;
+    }
+
+    return `
+      <tr>
+        <td class="align-center" style="width:7%">${idx + 1}</td>
+        <td class="align-left" style="width:24%">${nl2br(it.name)}</td>
+        <td class="align-center" style="width:9%">${esc(it.qty)}</td>
+        <td class="align-center" style="width:10%">${esc(it.unit)}</td>
+        <td class="align-right" style="width:14%">${it.budget ? (isNaN(it.budget) ? esc(it.budget) : formatMoney(it.budget)) : ''}</td>
+        ${projectCells}
+      </tr>
+    `;
+  }).join('');
+
+  const totalVal = calcTotal();
+  const isMultiPage = s.subParas && s.subParas.length > 0;
+
+  // ส่วนหัวกระดาษพร้อมเส้นประใต้ตัวหนังสือ
+  const headerSectionHtml = `
+    <div class="memo-header">
+      <div class="garuda-box">
+        <img src="${GARUDA_SRC}" alt="ตราครุฑ">
+      </div>
+      <div class="memo-title">บันทึกข้อความ</div>
+    </div>
+
+    <div class="memo-meta-line">
+      <span class="label">ส่วนงาน</span>
+      <span class="fill-dotted">${esc(s.department)}</span>
+    </div>
+
+    <div class="memo-meta-line">
+      <div class="col-left">
+        <span class="label">ที่</span>
+        <span class="fill-dotted">${esc(s.docNo)}</span>
+      </div>
+      <div class="col-right">
+        <span class="label">วันที่</span>
+        <span class="fill-dotted">${esc(headerDateStr)}</span>
+      </div>
+    </div>
+
+    <div class="memo-meta-line">
+      <span class="label">เรื่อง</span>
+      <span class="fill-dotted">${esc(s.subject)}</span>
+    </div>
+
+    <div class="memo-to">
+      <span class="label">เรียน</span>
+      <span class="value">${esc(s.to)}</span>
+    </div>
+  `;
+
+  const sigSpacingClass = s.signatureSpacing === 'compact' ? 'spacing-compact' : (s.signatureSpacing === 'tight' ? 'spacing-tight' : '');
+  const tblFontSize = s.tableFontSize || '14';
+  const tableStyleAttr = `style="font-size:${tblFontSize}pt;${tblFontSize < 13 ? 'line-height:1.1;' : ''}"`;
+
+  // บล็อกลงนามท้ายเรื่อง
+  const signatureSectionHtml = `
+    <div class="memo-signatures ${sigSpacingClass}">
+      <div class="sig-section">
+        <div class="sig-header-label">${esc(s.preparerRole || 'ผู้จัดทำ')}</div>
+        <div class="sig-name-block">
+          <div class="sig-name">${esc(s.preparerName)}</div>
+          <div class="sig-position">${nl2br(s.preparerPos)}</div>
+        </div>
+      </div>
+
+      <div class="sig-section">
+        <div class="sig-header-label">${esc(s.approverStmt || 'เห็นชอบ')}</div>
+        <div class="sig-name-block">
+          <div class="sig-name">${esc(s.approverName)}</div>
+          <div class="sig-position">${nl2br(s.approverPos)}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (isMultiPage) {
+    // ================= 2 PAGES MODE =================
+    const subParasHtml = s.subParas.map(sp => `
+      <p class="memo-sub-paragraph">
+        ${sp.title ? `<u>${esc(sp.title)}</u> ` : ''}${esc(sp.content)}
+      </p>
+    `).join('');
+
+    const page1 = document.createElement('div');
+    page1.className = 'memo-page';
+    page1.id = 'memoPage1';
+    page1.innerHTML = `
+      ${headerSectionHtml}
+      <p class="memo-paragraph" style="margin-top:10pt;">${para1}</p>
+      ${subParasHtml}
+    `;
+
+    const page2 = document.createElement('div');
+    page2.className = 'memo-page';
+    page2.id = 'memoPage2';
+    page2.innerHTML = `
+      <div class="page-number-header">- ๒ -</div>
+
+      <p class="memo-paragraph">${para2}</p>
+
+      <table class="memo-table" ${tableStyleAttr}>
+        <thead>
+          <tr>
+            <th>ลำดับ</th>
+            <th>รายการ</th>
+            <th>จำนวน</th>
+            <th>หน่วย</th>
+            <th>งบประมาณ<br>(บาท)</th>
+            <th>รหัสโครงการ</th>
+            <th>เบิกจ่ายจากโครงการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+          <tr>
+            <td colspan="4" class="total-label">รวมวงเงินงบประมาณ</td>
+            <td class="total-amount">${esc(totalVal)}</td>
+            <td colspan="2"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="memo-paragraph closing">${esc(s.closingText || 'จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ')}</p>
+      ${signatureSectionHtml}
+    `;
+
+    container.appendChild(page1);
+    container.appendChild(page2);
+  } else {
+    // ================= 1 PAGE MODE =================
+    const page1 = document.createElement('div');
+    page1.className = 'memo-page';
+    page1.id = 'memoPage1';
+    page1.innerHTML = `
+      ${headerSectionHtml}
+      <p class="memo-paragraph" style="margin-top:10pt;">${para1}</p>
+      <p class="memo-paragraph">${para2}</p>
+
+      <table class="memo-table" ${tableStyleAttr}>
+        <thead>
+          <tr>
+            <th>ลำดับ</th>
+            <th>รายการ</th>
+            <th>จำนวน</th>
+            <th>หน่วย</th>
+            <th>งบประมาณ<br>(บาท)</th>
+            <th>รหัสโครงการ</th>
+            <th>เบิกจ่ายจากโครงการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+          <tr>
+            <td colspan="4" class="total-label">รวมวงเงินงบประมาณ</td>
+            <td class="total-amount">${esc(totalVal)}</td>
+            <td colspan="2"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="memo-paragraph closing">${esc(s.closingText || 'จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ')}</p>
+      ${signatureSectionHtml}
+    `;
+    container.appendChild(page1);
+  }
+
+  $('#totalDisplay').textContent = totalVal;
+  fitPreview();
+}
+
+function fitPreview() {
+  const pane = $('#previewPane');
+  const wrap = $('#previewScaleWrapper');
+  if (!pane || !wrap) return;
+  if (window.matchMedia('print').matches) return;
+
+  const availWidth = pane.clientWidth - 48;
+  const paperPx = (210 / 25.4) * 96;
+  const scale = Math.min(1.05, Math.max(0.35, availWidth / paperPx));
+  wrap.style.transform = `scale(${scale})`;
+}
+
+window.addEventListener('resize', fitPreview);
+window.addEventListener('beforeprint', () => {
+  $('#previewScaleWrapper').style.transform = 'none';
+  document.title = '';
+});
+window.addEventListener('afterprint', () => {
+  document.title = '';
+  fitPreview();
+});
+
+// Export Direct PDF using html2pdf.js
+async function exportToPdfDirect() {
+  if (typeof html2pdf === 'undefined') {
+    alert('ไม่สามารถโหลดโมดูล PDF ได้ กำลังเปิดหน้าต่างพิมพ์ของเบราว์เซอร์แทน');
+    window.print();
+    return;
+  }
+
+  showToast('กำลังประมวลผลและสร้างไฟล์ PDF คุณภาพสูง...');
+
+  const pagesContainer = document.getElementById('pagesContainer');
+  const fileName = (state.docNo ? state.docNo.replace(/[^a-zA-Z0-9ก-๙\-]/g, '_') : 'บันทึกข้อความ') + '.pdf';
+
+  const clone = pagesContainer.cloneNode(true);
+  clone.style.transform = 'none';
+  clone.style.margin = '0';
+  clone.style.gap = '0';
+
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.left = '-9999px';
+  container.style.top = '0';
+  container.style.width = '210mm';
+  container.style.background = '#ffffff';
+  container.appendChild(clone);
+  document.body.appendChild(container);
+
+  const pages = clone.querySelectorAll('.memo-page');
+  pages.forEach((p, idx) => {
+    p.style.boxShadow = 'none';
+    p.style.margin = '0';
+    if (idx < pages.length - 1) {
+      p.style.pageBreakAfter = 'always';
+    }
+  });
+
+  const opt = {
+    margin: [0, 0, 0, 0],
+    filename: fileName,
+    image: { type: 'png', quality: 1.0 },
+    html2canvas: {
+      scale: 3.2,
+      useCORS: true,
+      letterRendering: false,
+      scrollY: 0,
+      scrollX: 0,
+      backgroundColor: '#ffffff'
+    },
+    jsPDF: {
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait'
+    },
+    pagebreak: { mode: ['css', 'legacy'] }
+  };
+
+  try {
+    await html2pdf().set(opt).from(clone).save();
+    showToast('ดาวน์โหลดไฟล์ PDF สำเร็จ ✓ (' + fileName + ')');
+  } catch (err) {
+    console.error('PDF export error:', err);
+    alert('เกิดข้อผิดพลาดในการสร้าง PDF: ' + err.message);
+  } finally {
+    document.body.removeChild(container);
+  }
+}
+
+// Export Word (.docx) Function พร้อมเส้นประใต้หัวข้อเอกสาร
+async function exportToWord() {
+  if (typeof docx === 'undefined') {
+    alert('ไม่สามารถโหลดโมดูล docx ได้ กรุณาเชื่อมต่ออินเทอร์เน็ต');
+    return;
+  }
+
+  showToast('กำลังสร้างเอกสาร Word (.docx)...');
+
+  try {
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, AlignmentType, WidthType, BorderStyle, ImageRun, VerticalAlign, PageBreak } = docx;
+
+    const s = state;
+    const FONT_NAME = 'TH Sarabun New';
+    const FONT_SIZE_BODY = 32;   // 16pt = 32 half-points
+    const FONT_SIZE_TITLE = 58;  // 29pt = 58 half-points
+    const tblPt = Number(s.tableFontSize) || 14;
+    const FONT_SIZE_TABLE = tblPt * 2;  // in half-points
+
+    const base64Data = GARUDA_SRC.split(',')[1];
+    const binaryString = atob(base64Data);
+    const garudaBytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      garudaBytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const reqDateStr = [s.requestDay, s.requestMonth, s.requestYear].filter(Boolean).join(' ');
+    const para1Text = `ตามที่ ${s.requester} ได้มีคำขออนุมัติค่าสมัครสมาชิกโปรแกรม ${s.software}${s.itemCount ? ` ${s.itemCount}` : ''}${reqDateStr ? ` เมื่อวันที่ ${reqDateStr}` : ''} ${s.purpose}`;
+
+    const meetDateStr = [s.meetingDayName, s.meetingDay ? `ที่ ${s.meetingDay}` : '', s.meetingMonth, s.meetingYear].filter(Boolean).join(' ');
+    const periodStartStr = [s.periodStartDay, s.periodStartMonth, s.periodStartYear].filter(Boolean).join(' ');
+    const periodEndStr = [s.periodEndDay, s.periodEndMonth, s.periodEndYear].filter(Boolean).join(' ');
+
+    let periodStr = '';
+    if (s.durationMonths || periodStartStr || periodEndStr) {
+      const dur = s.durationMonths ? `เป็นจำนวน ${s.durationMonths} ` : '';
+      const span = (periodStartStr && periodEndStr) ? `ตั้งแต่ ${periodStartStr} – ${periodEndStr} ` : '';
+      periodStr = `โดยอนุมัติระยะเวลา${dur}${span}ซึ่งมีรายละเอียดดังนี้`;
+    } else {
+      periodStr = 'ซึ่งมีรายละเอียดดังนี้';
+    }
+    const para2Text = `ในคราวประชุม${s.committee}${s.meetingNo ? ` ครั้งที่ ${s.meetingNo}` : ''}${meetDateStr ? ` ${meetDateStr}` : ''} ${s.committee} มีมติเห็นชอบอนุมัติค่าสมัครสมาชิกโปรแกรม ${s.resolutionSoftware}${s.resolutionCount ? ` จำนวน ${s.resolutionCount} รายการ` : ''} เป็นที่เรียบร้อย ${periodStr}`;
+
+    const headerDateStr = [s.docDay, s.docMonth, s.docYear].filter(Boolean).join(' ');
+
+    const subParaWordElements = (s.subParas || []).map(sp => new Paragraph({
+      indent: { firstLine: 1418 },
+      alignment: AlignmentType.JUSTIFIED,
+      spacing: { before: 80, after: 80, line: 280 },
+      children: [
+        ...(sp.title ? [new TextRun({ text: sp.title + ' ', underline: {}, size: FONT_SIZE_BODY, font: FONT_NAME })] : []),
+        new TextRun({ text: sp.content, size: FONT_SIZE_BODY, font: FONT_NAME })
+      ]
+    }));
+
+    // Table rows
+    const tableHeaderRow = new TableRow({
+      tableHeader: true,
+      children: [
+        new TableCell({ width: { size: 7, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'ลำดับ', bold: true, size: FONT_SIZE_TABLE, font: FONT_NAME })] })] }),
+        new TableCell({ width: { size: 24, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'รายการ', bold: true, size: FONT_SIZE_TABLE, font: FONT_NAME })] })] }),
+        new TableCell({ width: { size: 9, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'จำนวน', bold: true, size: FONT_SIZE_TABLE, font: FONT_NAME })] })] }),
+        new TableCell({ width: { size: 10, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'หน่วย', bold: true, size: FONT_SIZE_TABLE, font: FONT_NAME })] })] }),
+        new TableCell({ width: { size: 14, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'งบประมาณ (บาท)', bold: true, size: FONT_SIZE_TABLE, font: FONT_NAME })] })] }),
+        new TableCell({ width: { size: 16, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'รหัสโครงการ', bold: true, size: FONT_SIZE_TABLE, font: FONT_NAME })] })] }),
+        new TableCell({ width: { size: 20, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'เบิกจ่ายจากโครงการ', bold: true, size: FONT_SIZE_TABLE, font: FONT_NAME })] })] })
+      ]
+    });
+
+    const hasMultipleRows = s.items.length > 1;
+    const isSameProject = hasMultipleRows && s.items.length > 1 && (
+      s.items.slice(1).every(it => !it.projectCode && !it.projectName) ||
+      s.items.every(it => it.projectCode === s.items[0].projectCode && it.projectName === s.items[0].projectName && (it.projectCode || it.projectName))
+    );
+    const firstRowSpan = isSameProject ? s.items.length : 1;
+
+    const dataRows = s.items.map((it, idx) => {
+      const bText = it.budget ? (isNaN(it.budget) ? it.budget : formatMoney(it.budget)) : '';
+      const isFirst = idx === 0;
+      const mergeCols = (firstRowSpan > 1);
+
+      const cells = [
+        new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: String(idx + 1), size: FONT_SIZE_TABLE, font: FONT_NAME })] })] }),
+        new TableCell({ children: it.name.split('\n').map(l => new Paragraph({ children: [new TextRun({ text: l, size: FONT_SIZE_TABLE, font: FONT_NAME })] })) }),
+        new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: it.qty || '', size: FONT_SIZE_TABLE, font: FONT_NAME })] })] }),
+        new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: it.unit || '', size: FONT_SIZE_TABLE, font: FONT_NAME })] })] }),
+        new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: bText, size: FONT_SIZE_TABLE, font: FONT_NAME })] })] })
+      ];
+
+      if (mergeCols) {
+        if (isFirst) {
+          cells.push(new TableCell({ rowSpan: firstRowSpan, children: it.projectCode.split('\n').map(l => new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: l, size: FONT_SIZE_TABLE, font: FONT_NAME })] })) }));
+          cells.push(new TableCell({ rowSpan: firstRowSpan, children: it.projectName.split('\n').map(l => new Paragraph({ children: [new TextRun({ text: l, size: FONT_SIZE_TABLE, font: FONT_NAME })] })) }));
+        }
+      } else {
+        cells.push(new TableCell({ children: it.projectCode.split('\n').map(l => new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: l, size: FONT_SIZE_TABLE, font: FONT_NAME })] })) }));
+        cells.push(new TableCell({ children: it.projectName.split('\n').map(l => new Paragraph({ children: [new TextRun({ text: l, size: FONT_SIZE_TABLE, font: FONT_NAME })] })) }));
+      }
+
+      return new TableRow({ children: cells });
+    });
+
+    const totalRow = new TableRow({
+      children: [
+        new TableCell({ columnSpan: 4, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'รวมวงเงินงบประมาณ', bold: true, size: FONT_SIZE_TABLE, font: FONT_NAME })] })] }),
+        new TableCell({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: calcTotal(), bold: true, size: FONT_SIZE_TABLE, font: FONT_NAME })] })] }),
+        new TableCell({ columnSpan: 2, children: [new Paragraph({})] })
+      ]
+    });
+
+    const preparerPosParas = (s.preparerPos || '').split('\n').map(l => new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { line: 260 },
+      children: [new TextRun({ text: l, size: FONT_SIZE_BODY, font: FONT_NAME })]
+    }));
+
+    const approverPosParas = (s.approverPos || '').split('\n').map(l => new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { line: 260 },
+      children: [new TextRun({ text: l, size: FONT_SIZE_BODY, font: FONT_NAME })]
+    }));
+
+    const isMultiPageWord = s.subParas && s.subParas.length > 0;
+    let docBodyChildren = [];
+
+    // Header Table
+    const headerTable = new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      borders: {
+        top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE },
+        left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE },
+        insideHorizontal: { style: BorderStyle.NONE }, insideVertical: { style: BorderStyle.NONE }
+      },
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              width: { size: 20, type: WidthType.PERCENTAGE },
+              children: [
+                new Paragraph({
+                  children: [
+                    new ImageRun({
+                      data: garudaBytes,
+                      transformation: { width: 51, height: 57 }
+                    })
+                  ]
+                })
+              ]
+            }),
+            new TableCell({
+              width: { size: 60, type: WidthType.PERCENTAGE },
+              verticalAlign: VerticalAlign.CENTER,
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [
+                    new TextRun({ text: 'บันทึกข้อความ', bold: true, size: FONT_SIZE_TITLE, font: FONT_NAME })
+                  ]
+                })
+              ]
+            }),
+            new TableCell({
+              width: { size: 20, type: WidthType.PERCENTAGE },
+              children: [new Paragraph({})]
+            })
+          ]
+        })
+      ]
+    });
+
+    const dottedBorder = { style: BorderStyle.DOTTED, size: 4, color: '000000' };
+    const noneBorder = { style: BorderStyle.NONE };
+
+    const metadataTable = new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      borders: {
+        top: noneBorder, bottom: noneBorder, left: noneBorder, right: noneBorder,
+        insideHorizontal: noneBorder, insideVertical: noneBorder
+      },
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              width: { size: 12, type: WidthType.PERCENTAGE },
+              children: [new Paragraph({ children: [new TextRun({ text: 'ส่วนงาน', bold: true, size: FONT_SIZE_BODY, font: FONT_NAME })] })]
+            }),
+            new TableCell({
+              width: { size: 88, type: WidthType.PERCENTAGE },
+              borders: { bottom: dottedBorder, top: noneBorder, left: noneBorder, right: noneBorder },
+              children: [new Paragraph({ children: [new TextRun({ text: s.department, size: FONT_SIZE_BODY, font: FONT_NAME })] })]
+            })
+          ]
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              width: { size: 12, type: WidthType.PERCENTAGE },
+              children: [new Paragraph({ spacing: { before: 60 }, children: [new TextRun({ text: 'ที่', bold: true, size: FONT_SIZE_BODY, font: FONT_NAME })] })]
+            }),
+            new TableCell({
+              width: { size: 38, type: WidthType.PERCENTAGE },
+              borders: { bottom: dottedBorder, top: noneBorder, left: noneBorder, right: noneBorder },
+              children: [new Paragraph({ spacing: { before: 60 }, children: [new TextRun({ text: s.docNo, size: FONT_SIZE_BODY, font: FONT_NAME })] })]
+            }),
+            new TableCell({
+              width: { size: 12, type: WidthType.PERCENTAGE },
+              children: [new Paragraph({ spacing: { before: 60 }, children: [new TextRun({ text: 'วันที่', bold: true, size: FONT_SIZE_BODY, font: FONT_NAME })] })]
+            }),
+            new TableCell({
+              width: { size: 38, type: WidthType.PERCENTAGE },
+              borders: { bottom: dottedBorder, top: noneBorder, left: noneBorder, right: noneBorder },
+              children: [new Paragraph({ spacing: { before: 60 }, children: [new TextRun({ text: headerDateStr, size: FONT_SIZE_BODY, font: FONT_NAME })] })]
+            })
+          ]
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              width: { size: 12, type: WidthType.PERCENTAGE },
+              children: [new Paragraph({ spacing: { before: 60 }, children: [new TextRun({ text: 'เรื่อง', bold: true, size: FONT_SIZE_BODY, font: FONT_NAME })] })]
+            }),
+            new TableCell({
+              width: { size: 88, type: WidthType.PERCENTAGE },
+              columnSpan: 3,
+              borders: { bottom: dottedBorder, top: noneBorder, left: noneBorder, right: noneBorder },
+              children: [new Paragraph({ spacing: { before: 60 }, children: [new TextRun({ text: s.subject, size: FONT_SIZE_BODY, font: FONT_NAME })] })]
+            })
+          ]
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              width: { size: 12, type: WidthType.PERCENTAGE },
+              children: [new Paragraph({ spacing: { before: 60, after: 100 }, children: [new TextRun({ text: 'เรียน', bold: true, size: FONT_SIZE_BODY, font: FONT_NAME })] })]
+            }),
+            new TableCell({
+              width: { size: 88, type: WidthType.PERCENTAGE },
+              columnSpan: 3,
+              children: [new Paragraph({ spacing: { before: 60, after: 100 }, children: [new TextRun({ text: s.to, size: FONT_SIZE_BODY, font: FONT_NAME })] })]
+            })
+          ]
+        })
+      ]
+    });
+
+    const budgetTable = new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      rows: [tableHeaderRow, ...dataRows, totalRow]
+    });
+
+    const signatureTable = new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      borders: {
+        top: noneBorder, bottom: noneBorder, left: noneBorder, right: noneBorder,
+        insideHorizontal: noneBorder, insideVertical: noneBorder
+      },
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({ width: { size: 36, type: WidthType.PERCENTAGE }, children: [new Paragraph({})] }),
+            new TableCell({
+              width: { size: 64, type: WidthType.PERCENTAGE },
+              children: [
+                new Paragraph({
+                  spacing: { line: 280 },
+                  children: [
+                    new TextRun({ text: s.preparerRole || 'ผู้จัดทำ', bold: true, size: FONT_SIZE_BODY, font: FONT_NAME })
+                  ]
+                }),
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  spacing: { before: 380, line: 260 },
+                  children: [
+                    new TextRun({ text: s.preparerName || '(................................................)', size: FONT_SIZE_BODY, font: FONT_NAME })
+                  ]
+                }),
+                ...preparerPosParas,
+
+                new Paragraph({
+                  spacing: { before: 380, line: 280 },
+                  children: [
+                    new TextRun({ text: s.approverStmt || 'เห็นชอบ', bold: true, size: FONT_SIZE_BODY, font: FONT_NAME })
+                  ]
+                }),
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  spacing: { before: 380, line: 260 },
+                  children: [
+                    new TextRun({ text: s.approverName || '(................................................)', size: FONT_SIZE_BODY, font: FONT_NAME })
+                  ]
+                }),
+                ...approverPosParas
+              ]
+            })
+          ]
+        })
+      ]
+    });
+
+    const para1Element = new Paragraph({
+      indent: { firstLine: 1418 },
+      alignment: AlignmentType.JUSTIFIED,
+      spacing: { before: 80, after: 80, line: 280 },
+      children: [new TextRun({ text: para1Text, size: FONT_SIZE_BODY, font: FONT_NAME })]
+    });
+
+    if (isMultiPageWord) {
+      docBodyChildren = [
+        headerTable,
+        metadataTable,
+        para1Element,
+        ...subParaWordElements,
+        new Paragraph({ children: [new PageBreak()] }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 180, line: 280 },
+          children: [new TextRun({ text: '- ๒ -', size: FONT_SIZE_BODY, font: FONT_NAME })]
+        }),
+        new Paragraph({
+          indent: { firstLine: 1418 },
+          alignment: AlignmentType.JUSTIFIED,
+          spacing: { before: 80, after: 120, line: 280 },
+          children: [new TextRun({ text: para2Text, size: FONT_SIZE_BODY, font: FONT_NAME })]
+        }),
+        budgetTable,
+        new Paragraph({
+          indent: { firstLine: 1418 },
+          spacing: { before: 160, after: 200, line: 280 },
+          children: [new TextRun({ text: s.closingText || 'จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ', size: FONT_SIZE_BODY, font: FONT_NAME })]
+        }),
+        signatureTable
+      ];
+    } else {
+      docBodyChildren = [
+        headerTable,
+        metadataTable,
+        para1Element,
+        new Paragraph({
+          indent: { firstLine: 1418 },
+          alignment: AlignmentType.JUSTIFIED,
+          spacing: { before: 80, after: 120, line: 280 },
+          children: [new TextRun({ text: para2Text, size: FONT_SIZE_BODY, font: FONT_NAME })]
+        }),
+        budgetTable,
+        new Paragraph({
+          indent: { firstLine: 1418 },
+          spacing: { before: 160, after: 200, line: 280 },
+          children: [new TextRun({ text: s.closingText || 'จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ', size: FONT_SIZE_BODY, font: FONT_NAME })]
+        }),
+        signatureTable
+      ];
+    }
+
+    const doc = new Document({
+      sections: [{
+        properties: {
+          page: {
+            size: { width: 11906, height: 16838 },
+            margin: { top: 1021, bottom: 1134, left: 1701, right: 1134 }
+          }
+        },
+        children: docBodyChildren
+      }]
+    });
+
+    const blob = await Packer.toBlob(doc);
+    const fileName = (s.docNo ? s.docNo.replace(/[^a-zA-Z0-9ก-๙\-]/g, '_') : 'บันทึกข้อความ') + '.docx';
+    
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast('ส่งออกไฟล์ Word สำเร็จ ✓ (' + fileName + ')');
+  } catch(err) {
+    console.error('Word export error:', err);
+    alert('เกิดข้อผิดพลาดในการสร้างไฟล์ Word: ' + err.message);
+  }
+}
+
+// Event Listeners
+$('#btnAddItem').onclick = () => {
+  const defaultCode = (state.items && state.items[0]) ? state.items[0].projectCode : '';
+  const defaultProj = (state.items && state.items[0]) ? state.items[0].projectName : '';
+  state.items.push({ name: '', qty: '', unit: '', budget: '', projectCode: defaultCode, projectName: defaultProj });
+  renderItemsForm();
+  render();
+};
+
+$('#btnAddSubPara').onclick = () => {
+  if (!state.subParas) state.subParas = [];
+  state.subParas.push({ title: '', content: '' });
+  renderSubParasForm();
+  render();
+};
+
+const btnLoadAll4AIRoles = $('#btnLoadAll4AIRoles');
+if (btnLoadAll4AIRoles) {
+  btnLoadAll4AIRoles.onclick = () => {
+    state.subParas = [
+      {
+        title: 'Claude MAX',
+        content: 'ใช้สำหรับนำ Evidence และ Insight ที่ผ่านการวิเคราะห์แล้วมาคิดต่อในระดับยุทธศาสตร์ โดยวิเคราะห์ความสัมพันธ์ของปัจจัยต่าง ๆ ในเชิงระบบ ค้นหา Bottleneck และ Root Cause กำหนด Strategic Issues, Strategic Priorities, Strategic Choices รวมถึงออกแบบแนวทางเชิงนโยบาย เป้าหมาย ยุทธศาสตร์ และ Roadmap ที่สามารถนำไปต่อยอดเป็นกลยุทธ์ระดับประเทศได้ ซึ่งหากมนุษย์ทำเองจะต้องใช้ผู้เชี่ยวชาญหลายด้านมาร่วมกันคิด วิเคราะห์ความสัมพันธ์ของข้อมูลจำนวนมาก ทดลองตั้งสมมติฐาน เปรียบเทียบทางเลือก และพัฒนาโครงสร้างยุทธศาสตร์หลายรอบ ซึ่งใช้ทั้งเวลาและทรัพยากรสูง ดังนั้น Claude Max จึงทำหน้าที่เป็น Strategic Thinking & Strategy Architecture ที่ช่วยเพิ่มความสามารถในการคิดเชิงระบบ และทดลองทางเลือกเชิงยุทธศาสตร์ได้อย่างรวดเร็วและเป็นโครงสร้าง'
+      },
+      {
+        title: 'Claude Pro',
+        content: 'ใช้สำหรับอ่าน วิเคราะห์ เปรียบเทียบ และสังเคราะห์ข้อมูลและเอกสารจำนวนมากที่ได้จากการวิจัย เพื่อนำข้อมูลดิบมาจัดหมวดหมู่ เชื่อมโยงประเด็น ค้นหารูปแบบ วิเคราะห์สาเหตุราก และพัฒนาเป็น Insight หรือข้อค้นพบที่มีความหมายต่อโจทย์วิจัย ซึ่งหากมนุษย์ทำเองจะต้องอ่านเอกสารจำนวนมากทีละฉบับ จดบันทึก สกัดประเด็น เปรียบเทียบความเห็นจากหลายแหล่ง และกลับมาสังเคราะห์ข้อมูลทั้งหมดด้วยตนเอง ซึ่งเป็นงานที่ใช้เวลานานและมีความเสี่ยงต่อการตกหล่นของข้อมูล ดังนั้น Claude Pro จึงทำหน้าที่เป็น Research Analyst ที่ช่วยเร่งกระบวนการเปลี่ยน “ข้อมูลจำนวนมาก” ให้กลายเป็น “ความรู้และ Insight ที่นำไปใช้ต่อได้”'
+      },
+      {
+        title: 'ChatGPT Plus',
+        content: 'ใช้สำหรับตรวจสอบ Cross-check ท้าทาย และบูรณาการผลลัพธ์จากการวิจัยและการออกแบบยุทธศาสตร์ของ AI ตัวอื่น โดยทำหน้าที่เป็น Red Team ที่พยายามค้นหาข้อผิดพลาดของข้อมูล สมมติฐาน ช่องว่างของเหตุผล ความไม่สอดคล้องกันระหว่าง Evidence กับ Strategy รวมถึงประเมินความเป็นไปได้ในการนำไปปฏิบัติ ก่อนสังเคราะห์ออกมาเป็นข้อเสนอเชิงยุทธศาสตร์ที่มีความชัดเจนและพร้อมนำเสนอแก่ผู้บริหารหรือผู้มีส่วนได้ส่วนเสีย ซึ่งหากมนุษย์ทำเองจะต้องมีผู้เชี่ยวชาญหลายฝ่ายมาทบทวนงาน ตั้งคำถามในมุมที่แตกต่าง ตรวจสอบความสมเหตุสมผล และ Review งานหลายรอบ ซึ่งใช้เวลานานและมีต้นทุนสูง ดังนั้น GPT Plus จึงทำหน้าที่เป็น Strategic Reviewer, Red Team และ Integrator เพื่อเพิ่มอีกหนึ่งชั้นของการตรวจสอบก่อนที่งานวิจัยจะถูกนำไปใช้ในการตัดสินใจเชิงยุทธศาสตร์'
+      },
+      {
+        title: 'Perplexity Pro',
+        content: 'ใช้สำหรับค้นหาและรวบรวมข้อมูลจากแหล่งข้อมูลจำนวนมากทั้งในและต่างประเทศอย่างรวดเร็ว พร้อมตรวจสอบแหล่งที่มา เปรียบเทียบข้อมูล และค้นหา Evidence ที่เกี่ยวข้องกับประเด็นวิจัย ซึ่งหากมนุษย์ดำเนินการเองจะต้องใช้เวลาจำนวนมากในการค้นเว็บไซต์ งานวิจัย รายงานภาครัฐ ข่าว ฐานข้อมูล และข้อมูลจากต่างประเทศทีละแหล่ง รวมถึงต้องเสียเวลาในการตรวจสอบความน่าเชื่อถือและเปรียบเทียบข้อมูลที่กระจัดกระจาย ดังนั้น Perplexity จึงทำหน้าที่เสมือน Research Intelligence ที่ช่วยลดเวลาในการทำ Desk Research และทำให้ทีมสามารถเข้าถึงข้อมูลจำนวนมากได้รวดเร็วขึ้น ก่อนนำข้อมูลเหล่านั้นไปวิเคราะห์ในขั้นตอนต่อไป'
+      }
+    ];
+    renderSubParasForm();
+    render();
+    showToast('โหลดบทบาท AI ครบทั้ง 4 รายการเรียบร้อยแล้ว ✓ (เป็นเอกสาร 2 หน้า)');
+  };
+}
+
+// ==========================================
+// 🌟 ฟังก์ชันตัวช่วยลดการกรอกข้อมูลเอง (Smart Helpers)
+// ==========================================
+
+const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const THAI_DAY_NAMES = ['วันอาทิตย์','วันจันทร์','วันอังคาร','วันพุธ','วันพฤหัสบดี','วันศุกร์','วันเสาร์'];
+
+function getTodayThai() {
+  const now = new Date();
+  return {
+    day: String(now.getDate()),
+    month: THAI_MONTHS[now.getMonth()],
+    year: String(now.getFullYear() + 543),
+    dayName: THAI_DAY_NAMES[now.getDay()]
+  };
+}
+
+function parseDateValToThai(dateVal) {
+  if (!dateVal) return null;
+  const parts = dateVal.split('-');
+  if (parts.length !== 3) return null;
+  const y = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10) - 1;
+  const d = parseInt(parts[2], 10);
+  const dt = new Date(y, m, d);
+  return {
+    day: String(d),
+    month: THAI_MONTHS[m] || '',
+    year: String(y + 543),
+    dayName: THAI_DAY_NAMES[dt.getDay()] || ''
+  };
+}
+
+// ผูกปฏิทินคลิกเลือกวันที่ (Thai DatePicker)
+document.querySelectorAll('input[data-cal-target]').forEach(cal => {
+  cal.onchange = () => {
+    const res = parseDateValToThai(cal.value);
+    if (!res) return;
+    const target = cal.dataset.calTarget;
+    if (target === 'doc') {
+      state.docDay = res.day;
+      state.docMonth = res.month;
+      state.docYear = res.year;
+    } else if (target === 'request') {
+      state.requestDay = res.day;
+      state.requestMonth = res.month;
+      state.requestYear = res.year;
+    } else if (target === 'meeting') {
+      state.meetingDay = res.day;
+      state.meetingMonth = res.month;
+      state.meetingYear = res.year;
+      state.meetingDayName = res.dayName;
+    } else if (target === 'periodStart') {
+      state.periodStartDay = res.day;
+      state.periodStartMonth = res.month;
+      state.periodStartYear = res.year;
+    } else if (target === 'periodEnd') {
+      state.periodEndDay = res.day;
+      state.periodEndMonth = res.month;
+      state.periodEndYear = res.year;
+    }
+    bindForm();
+    render();
+    showToast(`เลือกวันที่ ${res.day} ${res.month} ${res.year} เรียบร้อยแล้ว ✓`);
+  };
+});
+
+// ==========================================
+// 🏢 ระบบจัดการชื่อทีมที่ใช้บ่อย (Custom Teams Manager)
+// ==========================================
+const TEAMS_STORAGE_KEY = 'official_memo_saved_teams_v2';
+const DEFAULT_TEAMS = [
+  'ทีมบริหารงานทั่วไป (GA)',
+  'ทีมบัญชี การเงิน พัสดุ (AFP)',
+  'ทีมพันธกิจสากลและการสร้างพันธมิตร (IASA)',
+  'ทีมระบบคุณภาพ (QS)',
+  'ทีมสำนักประสานงานอุทยานวิทยาศาสตร์ภาคเหนือและกิจการ สป.อว. (NMCO)',
+  'ทีมพัฒนาศักยภาพบุคลากร (HD)',
+  'ทีมบ่มเพาะศักยภาพนวัตกรรมและเทคโนโลยี (PITI)',
+  'ทีมถ่ายทอดเทคโนโลยีและการตั้งบริษัท (Tech Spin)',
+  'ทีมโครงการความร่วมมือภาครัฐ (PubSec)',
+  'ทีมสนับสนุนการพัฒนาเทคโนโลยีเชิงลึก (Tech Up)',
+  'ทีมพัฒนานวัตกรรมและความเป็นผู้ประกอบการ (EIC)',
+  'ทีมบ่มเพาะธุรกิจนวัตกรรม (ISI)',
+  'ทีมใช้ประโยชน์โครงสร้างพื้นฐานและสาธารณูปโภค (IFU)',
+  'ทีมพัฒนาคุณภาพโครงสร้างพื้นฐาน (IQI)',
+  'ทีมบริการห้องปฏิบัติการและเครื่องมือ (LES)',
+  'ทีมโรงงานต้นแบบนวัตกรรมอาหารครบวงจร (FOODFABR)',
+  'ทีมสร้างสรรค์และการสื่อสาร (CC)',
+  'ทีมสำนักบริหารนวัตกรรม (IMO)',
+  'ทีมกลยุทธ์ การริเริ่ม และการปรับเปลี่ยนองค์กร (SIT)',
+  'ทีมการตลาดเพื่อส่งเสริมผลิตภัณฑ์นวัตกรรม (MI)',
+  'ทีมความร่วมมือกับอุตสาหกรรมและชุมชน (LINC)'
+];
+
+function getSavedTeams() {
+  try {
+    const raw = localStorage.getItem(TEAMS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : DEFAULT_TEAMS;
+  } catch(e) {
+    return DEFAULT_TEAMS;
+  }
+}
+
+function saveCustomTeams(list) {
+  try {
+    localStorage.setItem(TEAMS_STORAGE_KEY, JSON.stringify(list));
+  } catch(e) {}
+}
+
+function renderTeamDropdown() {
+  const sel = $('#selectTeamDropdown');
+  if (!sel) return;
+  const teams = getSavedTeams();
+  sel.innerHTML = '<option value="">-- เลือกชื่อทีมจากรายการ --</option>' +
+    teams.map(tm => `<option value="${esc(tm)}">${esc(tm)}</option>`).join('');
+
+  sel.onchange = () => {
+    if (!sel.value) return;
+    state.requester = sel.value;
+    const inp = $('#inputRequester');
+    if (inp) inp.value = sel.value;
+    render();
+    showToast(`เลือกทีม: ${sel.value} ✓`);
+  };
+}
+
+const btnSaveCurrentTeam = $('#btnSaveCurrentTeam');
+if (btnSaveCurrentTeam) {
+  btnSaveCurrentTeam.onclick = () => {
+    const cur = (state.requester || '').trim();
+    if (!cur) {
+      alert('กรุณากรอกชื่อทีมในช่องก่อนกดจำชื่อทีม');
+      return;
+    }
+    const teams = getSavedTeams();
+    if (teams.includes(cur)) {
+      showToast('ชื่อทีมนี้มีอยู่ในรายการ Dropdown อยู่แล้ว ✓');
+      return;
+    }
+    teams.push(cur);
+    saveCustomTeams(teams);
+    renderTeamDropdown();
+    const sel = $('#selectTeamDropdown');
+    if (sel) sel.value = cur;
+    showToast(`บันทึกชื่อทีม "${cur}" ลงใน Dropdown เรียบร้อยแล้ว ✓`);
+  };
+}
+
+// 1. ปุ่ม "ใช้วันนี้" สำหรับแต่ละจุด
+const btnTodayDoc = $('#btnTodayDoc');
+if (btnTodayDoc) {
+  btnTodayDoc.onclick = () => {
+    const t = getTodayThai();
+    state.docDay = t.day;
+    state.docMonth = t.month;
+    state.docYear = t.year;
+    bindForm();
+    render();
+    showToast('กรอกวันที่หนังสือเป็นวันนี้แล้ว ✓');
+  };
+}
+
+const btnTodayRequest = $('#btnTodayRequest');
+if (btnTodayRequest) {
+  btnTodayRequest.onclick = () => {
+    const t = getTodayThai();
+    state.requestDay = t.day;
+    state.requestMonth = t.month;
+    state.requestYear = t.year;
+    bindForm();
+    render();
+    showToast('กรอกวันที่ยื่นคำขอเป็นวันนี้แล้ว ✓');
+  };
+}
+
+const btnTodayMeeting = $('#btnTodayMeeting');
+if (btnTodayMeeting) {
+  btnTodayMeeting.onclick = () => {
+    const t = getTodayThai();
+    state.meetingDay = t.day;
+    state.meetingMonth = t.month;
+    state.meetingYear = t.year;
+    state.meetingDayName = t.dayName;
+    bindForm();
+    render();
+    showToast('กรอกวันที่ประชุมเป็นวันนี้แล้ว ✓');
+  };
+}
+
+// 2. คำนวณวันสิ้นสุดให้อัตโนมัติจากวันที่เริ่มต้นและระยะเวลา
+const btnCalcPeriod = $('#btnCalcPeriodEnd');
+if (btnCalcPeriod) {
+  btnCalcPeriod.onclick = () => {
+    let dur = parseInt(state.durationMonths) || 1;
+    let sDay = parseInt(state.periodStartDay);
+    let sMonthName = state.periodStartMonth ? state.periodStartMonth.trim() : '';
+    let sYearBE = parseInt(state.periodStartYear);
+
+    if (!sDay || !sMonthName || !sYearBE) {
+      alert('กรุณากรอก "ตั้งแต่วันที่" ให้ครบถ้วนก่อนคำนวณวันสิ้นสุด');
+      return;
+    }
+
+    let mIdx = THAI_MONTHS.indexOf(sMonthName);
+    if (mIdx === -1) {
+      alert('ไม่พบชื่อเดือนภาษาไทยที่ถูกต้องในช่องตั้งแต่วันที่');
+      return;
+    }
+
+    let sYearCE = sYearBE - 543;
+    let startDate = new Date(sYearCE, mIdx, sDay);
+
+    // บวกจำนวนเดือน แล้วลบออก 1 วัน
+    let endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + dur);
+    endDate.setDate(endDate.getDate() - 1);
+
+    state.periodEndDay = String(endDate.getDate());
+    state.periodEndMonth = THAI_MONTHS[endDate.getMonth()];
+    state.periodEndYear = String(endDate.getFullYear() + 543);
+
+    bindForm();
+    render();
+    showToast(`คำนวณวันสิ้นสุด (${dur} เดือน) เรียบร้อยแล้ว ✓`);
+  };
+}
+
+// 3. โปรไฟล์ผู้ลงนามสำเร็จรูป
+const btnProfileDanupol = $('#btnProfileDanupol');
+if (btnProfileDanupol) {
+  btnProfileDanupol.onclick = () => {
+    state.preparerRole = 'ผู้จัดทำ';
+    state.preparerName = '(นายดนุพล กรอกรวม)';
+    state.preparerPos = 'เลขานุการคณะกรรมการกำหนดนโยบาย\nด้านเทคโนโลยีสารสนเทศและการสื่อสาร';
+    state.approverStmt = 'เห็นชอบ';
+    state.approverName = '(ผู้ช่วยศาสตราจารย์ ดร.สุริยะ ทองมุณี)';
+    state.approverPos = 'ประธานคณะกรรมการกำหนดนโยบาย\nด้านเทคโนโลยีสารสนเทศและการสื่อสาร';
+    bindForm();
+    render();
+    showToast('โหลดชุดผู้ลงนาม คกก. ICT เรียบร้อย ✓');
+  };
+}
+
+const btnProfileBlank = $('#btnProfileBlank');
+if (btnProfileBlank) {
+  btnProfileBlank.onclick = () => {
+    state.preparerRole = 'ผู้จัดทำ';
+    state.preparerName = '';
+    state.preparerPos = '';
+    state.approverStmt = 'เห็นชอบ';
+    state.approverName = '';
+    state.approverPos = '';
+    bindForm();
+    render();
+    showToast('ล้างชื่อผู้ลงนามให้พิมพ์เองแล้ว ✓');
+  };
+}
+
+// 4. ชุดข้อมูลซอฟต์แวร์สำเร็จรูป (Software Presets) พร้อมเหตุผลความจำเป็นเชิงวิชาการ/ทางการ
+const SOFTWARE_PRESETS = {
+  claude_max: {
+    software: 'AI Tools',
+    subject: 'ขอความเห็นชอบค่าสมัครสมาชิกโปรแกรม AI Tools',
+    itemCount: '1 Account จำนวน 1 รายการ',
+    purpose: 'ใช้สำหรับนำ Evidence และ Insight ที่ผ่านการวิเคราะห์แล้วมาคิดต่อในระดับยุทธศาสตร์ โดยวิเคราะห์ความสัมพันธ์ของปัจจัยต่าง ๆ ในเชิงระบบ ค้นหา Bottleneck และ Root Cause กำหนด Strategic Issues, Strategic Priorities, Strategic Choices รวมถึงออกแบบแนวทางเชิงนโยบาย เป้าหมาย ยุทธศาสตร์ และ Roadmap ที่สามารถนำไปต่อยอดเป็นกลยุทธ์ระดับประเทศได้ ซึ่งหากมนุษย์ทำเองจะต้องใช้ผู้เชี่ยวชาญหลายด้านมาร่วมกันคิด วิเคราะห์ความสัมพันธ์ของข้อมูลจำนวนมาก ทดลองตั้งสมมติฐาน เปรียบเทียบทางเลือก และพัฒนาโครงสร้างยุทธศาสตร์หลายรอบ ซึ่งใช้ทั้งเวลาและทรัพยากรสูง ดังนั้น Claude Max จึงทำหน้าที่เป็น Strategic Thinking & Strategy Architecture ที่ช่วยเพิ่มความสามารถในการคิดเชิงระบบ และทดลองทางเลือกเชิงยุทธศาสตร์ได้อย่างรวดเร็วและเป็นโครงสร้าง',
+    resolutionSoftware: 'AI Tools 1 Account',
+    resolutionCount: '1',
+    durationMonths: '1',
+    itemName: 'Claude MAX (1 เดือน)',
+    qty: '1',
+    unit: 'Account',
+    budget: '7500.00'
+  },
+  claude_pro: {
+    software: 'AI Tools',
+    subject: 'ขอความเห็นชอบค่าสมัครสมาชิกโปรแกรม AI Tools',
+    itemCount: '1 Account จำนวน 1 รายการ',
+    purpose: 'ใช้สำหรับอ่าน วิเคราะห์ เปรียบเทียบ และสังเคราะห์ข้อมูลและเอกสารจำนวนมากที่ได้จากการวิจัย เพื่อนำข้อมูลดิบมาจัดหมวดหมู่ เชื่อมโยงประเด็น ค้นหารูปแบบ วิเคราะห์สาเหตุราก และพัฒนาเป็น Insight หรือข้อค้นพบที่มีความหมายต่อโจทย์วิจัย ซึ่งหากมนุษย์ทำเองจะต้องอ่านเอกสารจำนวนมากทีละฉบับ จดบันทึก สกัดประเด็น เปรียบเทียบความเห็นจากหลายแหล่ง และกลับมาสังเคราะห์ข้อมูลทั้งหมดด้วยตนเอง ซึ่งเป็นงานที่ใช้เวลานานและมีความเสี่ยงต่อการตกหล่นของข้อมูล ดังนั้น Claude Pro จึงทำหน้าที่เป็น Research Analyst ที่ช่วยเร่งกระบวนการเปลี่ยน “ข้อมูลจำนวนมาก” ให้กลายเป็น “ความรู้และ Insight ที่นำไปใช้ต่อได้”',
+    resolutionSoftware: 'AI Tools 1 Account',
+    resolutionCount: '1',
+    durationMonths: '1',
+    itemName: 'Claude Pro (1 เดือน)',
+    qty: '1',
+    unit: 'Account',
+    budget: '750.00'
+  },
+  chatgpt_plus: {
+    software: 'AI Tools',
+    subject: 'ขอความเห็นชอบค่าสมัครสมาชิกโปรแกรม AI Tools',
+    itemCount: '1 Account จำนวน 1 รายการ',
+    purpose: 'ใช้สำหรับตรวจสอบ Cross-check ท้าทาย และบูรณาการผลลัพธ์จากการวิจัยและการออกแบบยุทธศาสตร์ของ AI ตัวอื่น โดยทำหน้าที่เป็น Red Team ที่พยายามค้นหาข้อผิดพลาดของข้อมูล สมมติฐาน ช่องว่างของเหตุผล ความไม่สอดคล้องกันระหว่าง Evidence กับ Strategy รวมถึงประเมินความเป็นไปได้ในการนำไปปฏิบัติ ก่อนสังเคราะห์ออกมาเป็นข้อเสนอเชิงยุทธศาสตร์ที่มีความชัดเจนและพร้อมนำเสนอแก่ผู้บริหารหรือผู้มีส่วนได้ส่วนเสีย ซึ่งหากมนุษย์ทำเองจะต้องมีผู้เชี่ยวชาญหลายฝ่ายมาทบทวนงาน ตั้งคำถามในมุมที่แตกต่าง ตรวจสอบความสมเหตุสมผล และ Review งานหลายรอบ ซึ่งใช้เวลานานและมีต้นทุนสูง ดังนั้น GPT Plus จึงทำหน้าที่เป็น Strategic Reviewer, Red Team และ Integrator เพื่อเพิ่มอีกหนึ่งชั้นของการตรวจสอบก่อนที่งานวิจัยจะถูกนำไปใช้ในการตัดสินใจเชิงยุทธศาสตร์',
+    resolutionSoftware: 'AI Tools 1 Account',
+    resolutionCount: '1',
+    durationMonths: '1',
+    itemName: 'ChatGPT Plus (1 เดือน)',
+    qty: '1',
+    unit: 'Account',
+    budget: '750.00'
+  },
+  chatgpt_team: {
+    software: 'AI Tools',
+    subject: 'ขอความเห็นชอบค่าสมัครสมาชิกโปรแกรม AI Tools',
+    itemCount: '2 Account จำนวน 2 รายการ',
+    purpose: 'ใช้สำหรับตรวจสอบ Cross-check ท้าทาย และบูรณาการผลลัพธ์จากการวิจัยและการออกแบบยุทธศาสตร์ของ AI ตัวอื่น โดยทำหน้าที่เป็น Red Team ที่พยายามค้นหาข้อผิดพลาดของข้อมูล สมมติฐาน ช่องว่างของเหตุผล ความไม่สอดคล้องกันระหว่าง Evidence กับ Strategy รวมถึงประเมินความเป็นไปได้ในการนำไปปฏิบัติ ก่อนสังเคราะห์ออกมาเป็นข้อเสนอเชิงยุทธศาสตร์ที่มีความชัดเจนและพร้อมนำเสนอแก่ผู้บริหารหรือผู้มีส่วนได้ส่วนเสีย พร้อมรองรับการทำงานร่วมกันเป็นทีมผ่านระบบ Workspace ที่ปลอดภัย',
+    resolutionSoftware: 'AI Tools 2 Account',
+    resolutionCount: '2',
+    durationMonths: '1',
+    itemName: 'ChatGPT Team (1 เดือน)',
+    qty: '2',
+    unit: 'Account',
+    budget: '2200.00'
+  },
+  perplexity_pro: {
+    software: 'AI Tools',
+    subject: 'ขอความเห็นชอบค่าสมัครสมาชิกโปรแกรม AI Tools',
+    itemCount: '1 Account จำนวน 1 รายการ',
+    purpose: 'ใช้สำหรับค้นหาและรวบรวมข้อมูลจากแหล่งข้อมูลจำนวนมากทั้งในและต่างประเทศอย่างรวดเร็ว พร้อมตรวจสอบแหล่งที่มา เปรียบเทียบข้อมูล และค้นหา Evidence ที่เกี่ยวข้องกับประเด็นวิจัย ซึ่งหากมนุษย์ดำเนินการเองจะต้องใช้เวลาจำนวนมากในการค้นเว็บไซต์ งานวิจัย รายงานภาครัฐ ข่าว ฐานข้อมูล และข้อมูลจากต่างประเทศทีละแหล่ง รวมถึงต้องเสียเวลาในการตรวจสอบความน่าเชื่อถือและเปรียบเทียบข้อมูลที่กระจัดกระจาย ดังนั้น Perplexity จึงทำหน้าที่เสมือน Research Intelligence ที่ช่วยลดเวลาในการทำ Desk Research และทำให้ทีมสามารถเข้าถึงข้อมูลจำนวนมากได้รวดเร็วขึ้น ก่อนนำข้อมูลเหล่านั้นไปวิเคราะห์ในขั้นตอนต่อไป',
+    resolutionSoftware: 'AI Tools 1 Account',
+    resolutionCount: '1',
+    durationMonths: '1',
+    itemName: 'Perplexity Pro (1 เดือน)',
+    qty: '1',
+    unit: 'Account',
+    budget: '750.00'
+  },
+  ahaslides: {
+    software: 'AhaSlides',
+    subject: 'ขอความเห็นชอบค่าสมัครสมาชิกโปรแกรม AhaSlides',
+    itemCount: '1 Account จำนวน 1 รายการ',
+    purpose: 'เพื่อใช้ในการจัดประชุมเชิงปฏิบัติการ การสัมมนา และการมีส่วนร่วมแบบมีปฏิสัมพันธ์ (Interactive Presentation & Real-time Polling) สำหรับรวบรวมข้อคิดเห็น ประเมินผล และเสริมสร้างการมีส่วนร่วมของผู้เข้าร่วมประชุมอย่างมีประสิทธิภาพ',
+    resolutionSoftware: 'AhaSlides 1 Account',
+    resolutionCount: '1',
+    durationMonths: '1',
+    itemName: 'AhaSlides (1 เดือน)',
+    qty: '1',
+    unit: 'Account',
+    budget: '1200.00'
+  },
+  kahoot: {
+    software: 'Kahoot! 360',
+    subject: 'ขอความเห็นชอบค่าสมัครสมาชิกโปรแกรม Kahoot! 360',
+    itemCount: '1 Account จำนวน 1 รายการ',
+    purpose: 'เพื่อใช้เป็นแพลตฟอร์มการมีส่วนร่วมและการประเมินผลผ่านกิจกรรมการเรียนรู้แบบเกม (Gamified Assessment & Engagement Platform) ในการฝึกอบรม การประชุมสัมมนาบุคลากร และการจัดกิจกรรมเชิงยุทธศาสตร์ขององค์กร',
+    resolutionSoftware: 'Kahoot! 360 1 Account',
+    resolutionCount: '1',
+    durationMonths: '1',
+    itemName: 'Kahoot! 360 (1 เดือน)',
+    qty: '1',
+    unit: 'Account',
+    budget: '1500.00'
+  }
+};
+
+function applySoftwarePreset(pKey) {
+  const p = SOFTWARE_PRESETS[pKey];
+  if (!p) return;
+
+  state.software = p.software;
+  if (p.subject) state.subject = p.subject;
+  state.itemCount = p.itemCount;
+  state.purpose = p.purpose;
+  state.resolutionSoftware = p.resolutionSoftware;
+  state.resolutionCount = p.resolutionCount;
+  state.durationMonths = p.durationMonths;
+
+  if (!state.items || state.items.length === 0) {
+    state.items = [{ name: '', qty: '1', unit: 'Account', budget: '0.00', projectCode: '', projectName: '' }];
+  }
+  state.items[0].name = p.itemName;
+  state.items[0].qty = p.qty;
+  state.items[0].unit = p.unit;
+  state.items[0].budget = p.budget;
+
+  bindForm();
+  render();
+  showToast(`เติมข้อมูล ${p.itemName} (ในหมวด ${p.software}) เรียบร้อยแล้ว ✓`);
+}
+
+// ผูกเหตุการณ์ปุ่มเลือกทั่วไป (AhaSlides, Kahoot!)
+document.querySelectorAll('[data-preset]').forEach(btn => {
+  btn.onclick = () => {
+    applySoftwarePreset(btn.dataset.preset);
+  };
+});
+
+// ผูกเหตุการณ์ Dropdown "AI Tools"
+const selectAIToolPreset = $('#selectAIToolPreset');
+if (selectAIToolPreset) {
+  selectAIToolPreset.onchange = () => {
+    if (!selectAIToolPreset.value) return;
+    applySoftwarePreset(selectAIToolPreset.value);
+  };
+}
+
+// 5. Smart Text Parser (วางข้อความสรุปด่วนแล้วกระจายลงฟอร์ม)
+const btnToggleSmartPaste = $('#btnToggleSmartPaste');
+const smartPastePanel = $('#smartPastePanel');
+if (btnToggleSmartPaste && smartPastePanel) {
+  btnToggleSmartPaste.onclick = () => {
+    smartPastePanel.style.display = (smartPastePanel.style.display === 'none') ? 'block' : 'none';
+  };
+}
+
+const btnApplySmartPaste = $('#btnApplySmartPaste');
+const smartPasteInput = $('#smartPasteInput');
+if (btnApplySmartPaste && smartPasteInput) {
+  btnApplySmartPaste.onclick = () => {
+    const txt = (smartPasteInput.value || '').trim();
+    if (!txt) {
+      alert('กรุณาวางข้อความก่อนกดประมวลผล');
+      return;
+    }
+
+    // ตัวอย่างการสกัดคำจากข้อความ (RegEx)
+    // ตรวจสอบชื่อโปรแกรม
+    const softMatch = txt.match(/(Claude\s*(?:MAX|Pro)?|ChatGPT\s*(?:Plus|Team)?|Perplexity\s*(?:Pro)?|AhaSlides|Kahoot(?:\s*360)?|Midjourney)/i);
+    if (softMatch) {
+      const detectedName = softMatch[0];
+      const isAI = /^(Claude|ChatGPT|Perplexity|Midjourney)/i.test(detectedName);
+      if (isAI) {
+        state.software = 'AI Tools';
+        state.subject = 'ขอความเห็นชอบค่าสมัครสมาชิกโปรแกรม AI Tools';
+        state.resolutionSoftware = 'AI Tools 1 Account';
+      } else {
+        state.software = detectedName;
+        state.subject = `ขอความเห็นชอบค่าสมัครสมาชิกโปรแกรม ${detectedName}`;
+        state.resolutionSoftware = `${detectedName} 1 Account`;
+      }
+      if (state.items && state.items[0]) {
+        state.items[0].name = detectedName + (detectedName.includes('เดือน') ? '' : ' (1 เดือน)');
+      }
+    }
+
+    // ตรวจสอบงบประมาณ
+    const budgetMatch = txt.match(/(?:งบ|ราคา|วงเงิน|จำนวนเงิน|บาท)\s*[:=]?\s*([0-9,]+(?:\.[0-9]{2})?)/);
+    if (budgetMatch) {
+      const bVal = budgetMatch[1].replace(/,/g, '');
+      if (state.items && state.items[0]) {
+        state.items[0].budget = bVal;
+      }
+    }
+
+    // ตรวจสอบจำนวน Account
+    const countMatch = txt.match(/([0-9]+)\s*(?:Account|บัญชี|รายการ|Seat)/i);
+    if (countMatch) {
+      state.itemCount = `${countMatch[1]} Account จำนวน ${countMatch[1]} รายการ`;
+      state.resolutionCount = countMatch[1];
+      if (state.items && state.items[0]) {
+        state.items[0].qty = countMatch[1];
+      }
+    }
+
+    // ตรวจสอบระยะเวลา
+    const durMatch = txt.match(/([0-9]+)\s*(?:เดือน|ปี)/);
+    if (durMatch) {
+      state.durationMonths = durMatch[0];
+    }
+
+    // ตรวจสอบทีม/หน่วยงาน
+    const reqMatch = txt.match(/(?:สำหรับ|ทีม|จาก)\s*([ก-๙a-zA-Z0-9\s()]+?)(?=\s*(?:ขอ|เริ่ม|งบ|$))/);
+    if (reqMatch && reqMatch[1].length < 40) {
+      state.requester = reqMatch[1].trim();
+    }
+
+    bindForm();
+    render();
+    showToast('สกัดข้อมูลจากข้อความและกรอกลงฟอร์มแล้ว ✓');
+  };
+}
+
+// ปุ่มเดียว: โหลดข้อมูลตัวอย่างเริ่มต้น
+$('#btnLoadDemo').onclick = () => {
+  state = defaultTemplate();
+  bindForm();
+  render();
+  showToast('โหลดข้อมูลตัวอย่างเริ่มต้นแล้ว ✓');
+};
+
+$('#btnSave').onclick = saveDraft;
+
+$('#btnClear').onclick = () => {
+  if (!confirm('ยืนยันล้างข้อมูลทั้งหมดในฟอร์ม?')) return;
+  state = blankState();
+  bindForm();
+  render();
+  showToast('ล้างข้อมูลเรียบร้อยแล้ว');
+};
+
+$('#btnPdf').onclick = exportToPdfDirect;
+$('#btnWord').onclick = exportToWord;
+
+$('#btnPrint').onclick = () => {
+  const originalTitle = document.title;
+  const fileName = (state.docNo ? state.docNo.replace(/[^a-zA-Z0-9ก-๙\-]/g, '_') : 'บันทึกข้อความ');
+  document.title = fileName;
+  showToast('เปิดหน้าต่างพิมพ์: เลือก "บันทึกเป็น PDF" เพื่อได้ไฟล์คมชัด 100%');
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => {
+    setTimeout(() => {
+      window.print();
+      document.title = originalTitle;
+    }, 150);
+  });
+};
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+    saveDraft();
+  }
+});
+
+// Initialization: โหลดข้อมูลตัวอย่างพร้อมแสดงผลทันที ไม่ต้องเริ่มว่างเปล่า
+document.title = '';
+bindForm();
+renderTeamDropdown();
+render();
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(fitPreview);
+}
+
+})();
+</script>
+</body>
+</html>
