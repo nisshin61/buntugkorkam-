@@ -728,6 +728,19 @@ table.memo-table .total-amount {
             </select>
           </div>
 
+          <!-- Dropdown เลือก API (AI & Cloud Services) -->
+          <div style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #0284c7;padding:3px 10px;border-radius:999px;">
+            <span style="font-size:12px;font-weight:700;color:#0369a1;white-space:nowrap;">🔌 API Service:</span>
+            <select id="selectAPIPreset" style="border:none;background:transparent;font-size:12px;font-weight:600;color:#334155;outline:none;cursor:pointer;padding:2px 4px;">
+              <option value="">-- เลือกบริการ API ที่จะซื้อ --</option>
+              <option value="openai_api">🟢 OpenAI API (GPT-4o / Embeddings)</option>
+              <option value="anthropic_api">🟣 Anthropic API (Claude 3.5 Sonnet / Haiku)</option>
+              <option value="google_gemini_api">🔵 Google Gemini API</option>
+              <option value="deepseek_api">🐋 DeepSeek API</option>
+              <option value="general_api">⚡ บริการ API ทั่วไป (ระบุเอง)</option>
+            </select>
+          </div>
+
           <!-- โปรแกรมอื่นๆ คงเดิม -->
           <button type="button" class="pill-btn" data-preset="ahaslides">📊 AhaSlides</button>
           <button type="button" class="pill-btn" data-preset="kahoot">🎯 Kahoot! 360</button>
@@ -2439,6 +2452,71 @@ const SOFTWARE_PRESETS = {
     qty: '1',
     unit: 'Account',
     budget: '1500.00'
+  },
+  openai_api: {
+    software: 'API Service',
+    subject: 'ขอความเห็นชอบค่าบริการ API (OpenAI API)',
+    itemCount: '1 รายการ',
+    purpose: 'เพื่อใช้ในการเชื่อมต่อและประมวลผลข้อมูลผ่านระบบปัญญาประดิษฐ์ (AI Application & Integration) ด้วยโมเดล OpenAI (เช่น GPT-4o, Text Embedding) สำหรับการพัฒนาระบบอัตโนมัติ การสกัดและวิเคราะห์ข้อมูลความรู้ขนาดใหญ่ และการให้บริการสารสนเทศภายในหน่วยงาน',
+    resolutionSoftware: 'ค่าบริการ OpenAI API',
+    resolutionCount: '1 รายการ',
+    durationMonths: '1',
+    itemName: 'ค่าบริการ OpenAI API (ประมวลผลตามปริมาณการใช้งาน Token)',
+    qty: '1',
+    unit: 'รายการ',
+    budget: '0.00'
+  },
+  anthropic_api: {
+    software: 'API Service',
+    subject: 'ขอความเห็นชอบค่าบริการ API (Anthropic Claude API)',
+    itemCount: '1 รายการ',
+    purpose: 'เพื่อใช้ในการเชื่อมต่อและประมวลผลภาษาธรรมชาติขั้นสูง (Advanced NLP & Reasoning) ผ่าน Anthropic Claude API สำหรับการวิเคราะห์เอกสารเชิงลึก การสรุปความ และการพัฒนาระบบผู้ช่วยอัจฉริยะในการสนับสนุนการดำเนินงานเชิงยุทธศาสตร์',
+    resolutionSoftware: 'ค่าบริการ Anthropic Claude API',
+    resolutionCount: '1 รายการ',
+    durationMonths: '1',
+    itemName: 'ค่าบริการ Anthropic Claude API (ตามปริมาณการใช้งาน Token)',
+    qty: '1',
+    unit: 'รายการ',
+    budget: '0.00'
+  },
+  google_gemini_api: {
+    software: 'API Service',
+    subject: 'ขอความเห็นชอบค่าบริการ API (Google Gemini API)',
+    itemCount: '1 รายการ',
+    purpose: 'เพื่อใช้ในการประมวลผลข้อมูลแบบพหุโมดอล (Multimodal Processing) ทั้งข้อความ รูปภาพ และข้อมูลโครงสร้างผ่าน Google Gemini API ในการพัฒนาระบบฐานข้อมูลและแอปพลิเคชันสนับสนุนงานวิจัยและนวัตกรรม',
+    resolutionSoftware: 'ค่าบริการ Google Gemini API',
+    resolutionCount: '1 รายการ',
+    durationMonths: '1',
+    itemName: 'ค่าบริการ Google Gemini API (ตามปริมาณการใช้งาน)',
+    qty: '1',
+    unit: 'รายการ',
+    budget: '0.00'
+  },
+  deepseek_api: {
+    software: 'API Service',
+    subject: 'ขอความเห็นชอบค่าบริการ API (DeepSeek API)',
+    itemCount: '1 รายการ',
+    purpose: 'เพื่อใช้ในการประมวลผลเชิงเหตุผลและการพัฒนาโค้ดโปรแกรม (Reasoning & Code Generation) ผ่าน DeepSeek API เพื่อเพิ่มประสิทธิภาพในการทำงานวิจัยและพัฒนาระบบซอฟต์แวร์ด้วยความคุ้มค่าและรวดเร็ว',
+    resolutionSoftware: 'ค่าบริการ DeepSeek API',
+    resolutionCount: '1 รายการ',
+    durationMonths: '1',
+    itemName: 'ค่าบริการ DeepSeek API (ตามปริมาณการใช้งาน Token)',
+    qty: '1',
+    unit: 'รายการ',
+    budget: '0.00'
+  },
+  general_api: {
+    software: 'API Service',
+    subject: 'ขอความเห็นชอบค่าบริการ API',
+    itemCount: '1 รายการ',
+    purpose: 'เพื่อใช้ในการเชื่อมต่อระบบสารสนเทศและการแลกเปลี่ยนข้อมูลผ่าน Application Programming Interface (API) สำหรับการพัฒนาระบบงาน การดึงข้อมูลอัตโนมัติ และการเชื่อมโยงระบบสนับสนุนการดำเนินงานของหน่วยงาน',
+    resolutionSoftware: 'ค่าบริการ API',
+    resolutionCount: '1 รายการ',
+    durationMonths: '1',
+    itemName: 'ค่าบริการ API Service (ตามปริมาณการใช้งาน)',
+    qty: '1',
+    unit: 'รายการ',
+    budget: '0.00'
   }
 };
 
@@ -2480,6 +2558,17 @@ if (selectAIToolPreset) {
   selectAIToolPreset.onchange = () => {
     if (!selectAIToolPreset.value) return;
     applySoftwarePreset(selectAIToolPreset.value);
+    if ($('#selectAPIPreset')) $('#selectAPIPreset').value = '';
+  };
+}
+
+// ผูกเหตุการณ์ Dropdown "API Service"
+const selectAPIPreset = $('#selectAPIPreset');
+if (selectAPIPreset) {
+  selectAPIPreset.onchange = () => {
+    if (!selectAPIPreset.value) return;
+    applySoftwarePreset(selectAPIPreset.value);
+    if ($('#selectAIToolPreset')) $('#selectAIToolPreset').value = '';
   };
 }
 
@@ -2503,9 +2592,20 @@ if (btnApplySmartPaste && smartPasteInput) {
     }
 
     // ตัวอย่างการสกัดคำจากข้อความ (RegEx)
-    // ตรวจสอบชื่อโปรแกรม
+    // ตรวจสอบชื่อโปรแกรม หรือบริการ API
+    const apiMatch = txt.match(/(?:OpenAI|Anthropic|Gemini|DeepSeek)?\s*API/i);
     const softMatch = txt.match(/(Claude\s*(?:MAX|Pro)?|ChatGPT\s*(?:Plus|Team)?|Perplexity\s*(?:Pro)?|AhaSlides|Kahoot(?:\s*360)?|Midjourney)/i);
-    if (softMatch) {
+
+    if (apiMatch) {
+      const apiName = apiMatch[0].trim();
+      state.software = 'API Service';
+      state.subject = `ขอความเห็นชอบค่าบริการ API (${apiName})`;
+      state.resolutionSoftware = `ค่าบริการ ${apiName}`;
+      if (state.items && state.items[0]) {
+        state.items[0].name = `ค่าบริการ ${apiName}`;
+        state.items[0].unit = 'รายการ';
+      }
+    } else if (softMatch) {
       const detectedName = softMatch[0];
       const isAI = /^(Claude|ChatGPT|Perplexity|Midjourney)/i.test(detectedName);
       if (isAI) {
